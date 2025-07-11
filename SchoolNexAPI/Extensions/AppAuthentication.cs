@@ -1,0 +1,65 @@
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+
+namespace SchoolNexAPI.Extensions
+{
+    public static class WebAppBuilderExtensions
+    {
+        public static WebApplicationBuilder AppAuthentication(this WebApplicationBuilder builder)
+        {
+            var secret = builder.Configuration.GetValue<string>("JwtOptions:Secret");
+            var issuer = builder.Configuration.GetValue<string>("JwtOptions:Issuer");
+            var audience = builder.Configuration.GetValue<string>("JwtOptions:Audience");
+
+            var key = Encoding.ASCII.GetBytes(secret);
+
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddSwaggerGen(option =>
+            {
+                option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            }
+                        }, new string[]{ }
+                    }
+                });
+            });
+            return builder;
+        }
+    }
+}

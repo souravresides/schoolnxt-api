@@ -1,0 +1,6 @@
+@SchoolNexAPI_HostAddress = http://localhost:5223
+
+GET {{SchoolNexAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
