@@ -1,0 +1,13 @@
+{
+  "ManageStudents": true,
+  "ManageEmployees": false,
+  "ManageAttendance": true,
+  "ManageFees": false,
+  "ViewReports": false,
+  "SendNotifications": false,
+  "ManageExams": false,
+  "AccessLibrary": false,
+  "AccessTransport": false,
+  "AccessHostel": false,
+  "CustomizeSettings": false
+}

@@ -7,7 +7,8 @@ using System.Security.Claims;
 
 namespace SchoolNexAPI.Controllers
 {
-    public class AuthController : Controller
+    [Route("Auth")]    
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
         public AuthController(IAuthService authService)
@@ -30,6 +31,9 @@ namespace SchoolNexAPI.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
             var response = await _authService.LoginAsync(model);
+            if (response.Is2FARequired)
+                return Ok(response);
+
             if (!response.IsSuccess)
                 return BadRequest(response);
 
@@ -40,7 +44,7 @@ namespace SchoolNexAPI.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub); // or ClaimTypes.NameIdentifier
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 

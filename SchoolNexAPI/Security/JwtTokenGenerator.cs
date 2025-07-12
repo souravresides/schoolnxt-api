@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace SchoolNexAPI.Utilities
+namespace SchoolNexAPI.Security
 {
     public class JwtTokenGenerator : IJwtTokenGenerator
     {
@@ -13,7 +13,7 @@ namespace SchoolNexAPI.Utilities
 
         public JwtTokenGenerator(IOptions<JwtOptions> jwtOptions)
         {
-            this._jwtOptions = jwtOptions.Value;
+            _jwtOptions = jwtOptions.Value;
         }
         public string GenerateToken(AppUserModel user, IEnumerable<string> roles)
         {
@@ -36,7 +36,7 @@ namespace SchoolNexAPI.Utilities
                 Audience = _jwtOptions.Audience,
                 Issuer = _jwtOptions.Issuer,
                 Subject = new ClaimsIdentity(claimsList),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddMinutes(60),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

@@ -1,7 +1,10 @@
-﻿namespace SchoolNexAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SchoolNexAPI.Models
 {
     public class RefreshTokenModel
     {
+        [Key]
         public int Id { get; set; }
         public string Token { get; set; }
         public DateTime Expires { get; set; }

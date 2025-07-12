@@ -7,5 +7,6 @@
         public string RefreshToken { get; set; }
         public List<string> Errors { get; set; }
         public bool Is2FARequired { get; set; }
-    }
+        public string TempUserId { get; set; }
+}
 }

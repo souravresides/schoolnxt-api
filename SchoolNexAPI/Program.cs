@@ -1,15 +1,19 @@
-using SchoolNexAPI.Data;
-using Microsoft.EntityFrameworkCore;
-using SchoolNexAPI.Extensions;
-using SchoolNexAPI.Models;
-using Microsoft.AspNetCore.Identity;
-using SchoolNexAPI.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using SchoolNexAPI.Services.Abstract;
-using SchoolNexAPI.Services.Concrete;
+using Microsoft.EntityFrameworkCore;
+using SchoolNexAPI.Data;
+using SchoolNexAPI.Extensions;
+using SchoolNexAPI.Middleware;
+using SchoolNexAPI.Models;
 using SchoolNexAPI.Repositories.Abstract;
 using SchoolNexAPI.Repositories.Concrete;
+using SchoolNexAPI.Security;
+using SchoolNexAPI.Services.Abstract;
+using SchoolNexAPI.Services.Concrete;
+using SchoolNexAPI.Utilities;
+using SchoolNexAPI.Utilities.Helpers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +21,13 @@ builder.Services.AddControllers(options =>
 {
     // Creating a new authorization policy that requires users to be authenticated
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-
     // Adding a filter to enforce the authorization policy to all controllers
     options.Filters.Add(new AuthorizeFilter(policy));
+}).AddJsonOptions(opt =>
+{
+    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
+;
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("SchoolNexDB"));
@@ -32,13 +39,20 @@ builder.AppAuthentication();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<ISchoolService, SchoolService>();
+builder.Services.AddScoped<ISubscriptionTypeService, SubscriptionTypeService>();
+builder.Services.AddScoped<IAppHelper, AppHelper>();
+builder.Services.AddScoped<ISubscriptionTypeSeeder, SubscriptionTypeSeeder>();
+builder.Services.AddScoped<ISchoolSubscriptionService, SchoolSubscriptionService>();
+builder.Services.AddScoped<ICustomFieldService, CustomFieldService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddTransient<EmailSender>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+app.UseCors("AllowFrontendDev");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -47,11 +61,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<SubscriptionValidationMiddleware>();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<ISubscriptionTypeSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.ApplyMigration();
 

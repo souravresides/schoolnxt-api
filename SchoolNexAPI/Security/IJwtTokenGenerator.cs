@@ -1,7 +1,7 @@
 ﻿using SchoolNexAPI.Models;
 using System.Security.Claims;
 
-namespace SchoolNexAPI.Utilities
+namespace SchoolNexAPI.Security
 {
     public interface IJwtTokenGenerator
     {

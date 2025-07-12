@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using SchoolNexAPI.DTOs;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Repositories.Abstract;
+using SchoolNexAPI.Security;
 using SchoolNexAPI.Services.Abstract;
 using SchoolNexAPI.Utilities;
 using System.IdentityModel.Tokens.Jwt;
@@ -61,8 +62,8 @@ namespace SchoolNexAPI.Services.Concrete
             if (user.TwoFactorEnabled)
             {
                 var code = await _userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
-                await _emailSender.SendAsync(user.Email, "Your 2FA Code", $"Code: {code}");
-                return new AuthResponseDto { Is2FARequired = true };
+                await _emailSender.SendAsync(user.Email, "Your 2FA Code", $"Your login code is: {code}");
+                return new AuthResponseDto { Is2FARequired = true, TempUserId =  user.Id};
             }
 
             var roles = await _userManager.GetRolesAsync(user);
