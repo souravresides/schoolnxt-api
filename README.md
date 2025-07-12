@@ -1,1 +1,1 @@
-# SchoolNexAPI
+# schoolnxt-api
