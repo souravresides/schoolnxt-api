@@ -39,5 +39,35 @@ namespace SchoolNexAPI.Repositories.Concrete
             _context.RefreshTokens.Update(refreshToken);
             await _context.SaveChangesAsync();
         }
+
+        public async Task CleanupExpiredAsync()
+        {
+            var tokensToDelete = await _context.RefreshTokens
+                .Where(x => x.Expires < DateTime.UtcNow || x.IsRevoked || x.IsUsed)
+                .ToListAsync();
+
+            _context.RefreshTokens.RemoveRange(tokensToDelete);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CountActiveTokensAsync(string userId)
+        {
+            return await _context.RefreshTokens
+                .CountAsync(x => x.UserId == userId && !x.IsRevoked && !x.IsUsed && x.Expires > DateTime.UtcNow);
+        }
+
+        public async Task RevokeOldestTokenAsync(string userId)
+        {
+            var oldest = await _context.RefreshTokens
+                .Where(x => x.UserId == userId && !x.IsRevoked && !x.IsUsed && x.Expires > DateTime.UtcNow)
+                .OrderBy(x => x.Created)
+                .FirstOrDefaultAsync();
+
+            if (oldest != null)
+            {
+                oldest.IsRevoked = true;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

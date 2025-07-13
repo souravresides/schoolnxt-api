@@ -10,6 +10,7 @@ using SchoolNexAPI.Repositories.Abstract;
 using SchoolNexAPI.Repositories.Concrete;
 using SchoolNexAPI.Security;
 using SchoolNexAPI.Services.Abstract;
+using SchoolNexAPI.Services.Background;
 using SchoolNexAPI.Services.Concrete;
 using SchoolNexAPI.Utilities;
 using SchoolNexAPI.Utilities.Helpers;
@@ -47,6 +48,8 @@ builder.Services.AddScoped<ISchoolSubscriptionService, SchoolSubscriptionService
 builder.Services.AddScoped<ICustomFieldService, CustomFieldService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddTransient<EmailSender>();
+builder.Services.AddHostedService<RefreshTokenCleanupService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

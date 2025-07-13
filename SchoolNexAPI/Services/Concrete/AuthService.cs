@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using SchoolNexAPI.DTOs;
 using SchoolNexAPI.Models;
@@ -18,15 +19,24 @@ namespace SchoolNexAPI.Services.Concrete
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly EmailSender _emailSender;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(UserManager<AppUserModel> userManager, IJwtTokenGenerator jwtTokenGenerator, EmailSender emailSender, IRefreshTokenRepository refreshTokenRepository)
+        public AuthService(UserManager<AppUserModel> userManager, IJwtTokenGenerator jwtTokenGenerator, 
+            EmailSender emailSender, IRefreshTokenRepository refreshTokenRepository, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
             this._emailSender = emailSender;
             this._refreshTokenRepository = refreshTokenRepository;
+            this._httpContextAccessor = httpContextAccessor;
         }
+        public string GetClientIp()
+        {
+            var ip = _httpContextAccessor.HttpContext?.Request?.Headers["X-Forwarded-For"].FirstOrDefault()
+                  ?? _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
 
+            return ip ?? "Unknown";
+        }
         public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto model)
         {
             var user = new AppUserModel
@@ -97,36 +107,50 @@ namespace SchoolNexAPI.Services.Concrete
             rng.GetBytes(randomBytes);
             return Convert.ToBase64String(randomBytes);
         }
-        public async Task<AuthResponseDto> RefreshTokenAsync(string token, string refreshToken)
+        public async Task<AuthResponseDto> RefreshTokenAsync(string accessToken, string refreshToken)
         {
-            var principal = _jwtTokenGenerator.GetPrincipalFromExpiredToken(token);
+            var principal = _jwtTokenGenerator.GetPrincipalFromExpiredToken(accessToken);
             var userId = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return new AuthResponseDto { IsSuccess = false, Errors = new List<string> { "User not found." } };
 
-            var savedRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
-            if (savedRefreshToken == null || savedRefreshToken.IsExpired || savedRefreshToken.UserId != user.Id)
-                return new AuthResponseDto { IsSuccess = false, Errors = new List<string> { "Invalid refresh token." } };
+            var oldRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+            if (oldRefreshToken == null || oldRefreshToken.IsExpired || oldRefreshToken.UserId != user.Id || oldRefreshToken.IsUsed || oldRefreshToken.IsRevoked)
+            {
+                return new AuthResponseDto { IsSuccess = false, Errors = new List<string> { "Invalid or already used refresh token." } };
+            }
 
+            // ✅ Mark old token as used
+            oldRefreshToken.IsUsed = true;
+            await _refreshTokenRepository.UpdateAsync(oldRefreshToken);
+
+            // ✅ Generate new token pair
             var roles = await _userManager.GetRolesAsync(user);
-            var newToken = _jwtTokenGenerator.GenerateToken(user, roles);
+            var newAccessToken = _jwtTokenGenerator.GenerateToken(user, roles);
             var newRefreshToken = GenerateRefreshToken();
+            var newTokenEntity = new RefreshTokenModel
+            {
+                Token = newRefreshToken,
+                UserId = user.Id,
+                Created = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddDays(30),
+                IsUsed = false,
+                IsRevoked = false,
+                CreatedByIp = GetClientIp()
+            };
 
-            // Update the refresh token
-            savedRefreshToken.Token = newRefreshToken;
-            savedRefreshToken.Expires = DateTime.UtcNow.AddDays(30);
-            savedRefreshToken.Created = DateTime.UtcNow;
-            await _refreshTokenRepository.UpdateAsync(savedRefreshToken);
+            await _refreshTokenRepository.AddAsync(newTokenEntity);
 
             return new AuthResponseDto
             {
                 IsSuccess = true,
-                Token = newToken,
+                Token = newAccessToken,
                 RefreshToken = newRefreshToken
             };
         }
+
 
 
         public async Task LogoutAsync(string userId)

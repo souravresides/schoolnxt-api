@@ -8,5 +8,8 @@ namespace SchoolNexAPI.Repositories.Abstract
         Task<RefreshTokenModel> GetByTokenAsync(string token);
         Task DeleteTokensByUserIdAsync(string userId);
         Task UpdateAsync(RefreshTokenModel refreshToken);
+        Task CleanupExpiredAsync();
+        Task<int> CountActiveTokensAsync(string userId);
+        Task RevokeOldestTokenAsync(string userId);
     }
 }

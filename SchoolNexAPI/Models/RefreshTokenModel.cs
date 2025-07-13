@@ -12,5 +12,9 @@ namespace SchoolNexAPI.Models
         public DateTime Created { get; set; }
         public string UserId { get; set; }
         public AppUserModel User { get; set; }
+
+        public bool IsUsed { get; set; } = false;
+        public bool IsRevoked { get; set; } = false;
+        public string? CreatedByIp { get; set; }
     }
 }
