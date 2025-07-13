@@ -23,7 +23,7 @@ namespace SchoolNexAPI.Controllers
             if (!response.IsSuccess)
                 return BadRequest(response);
 
-            return Ok(response);
+            return Ok(new { Message = "User account created successfully." });
         }
 
         [AllowAnonymous]
