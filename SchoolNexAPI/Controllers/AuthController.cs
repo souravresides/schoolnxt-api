@@ -37,7 +37,15 @@ namespace SchoolNexAPI.Controllers
             if (!response.IsSuccess)
                 return BadRequest(response);
 
-            return Ok(response);
+            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
+
+            return Ok(new { token = response.Token });
         }
 
         [Authorize]
@@ -55,13 +63,30 @@ namespace SchoolNexAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto model)
+        public async Task<IActionResult> RefreshToken()
         {
-            var response = await _authService.RefreshTokenAsync(model.Token, model.RefreshToken);
-            if (!response.IsSuccess)
-                return BadRequest(response);
+            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var refreshToken = Request.Cookies["refreshToken"];
 
-            return Ok(response);
+            if (string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new { Message = "No tokens provided." });
+
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new { Message = "Invalid tokens." });
+
+            var response = await _authService.RefreshTokenAsync(accessToken, refreshToken);
+            if (!response.IsSuccess)
+                return Unauthorized(response);
+
+            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
+
+            return Ok(new { token = response.Token });
         }
 
         [AllowAnonymous]
@@ -73,7 +98,15 @@ namespace SchoolNexAPI.Controllers
             if (!response.IsSuccess)
                 return BadRequest(response);
 
-            return Ok(response);
+            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
+
+            return Ok(new { token = response.Token });
         }
 
 
