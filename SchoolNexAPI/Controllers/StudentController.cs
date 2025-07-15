@@ -26,7 +26,7 @@ namespace SchoolNexAPI.Controllers
                 : throw new UnauthorizedAccessException("Invalid or missing school_id.");
         }
 
-        [HttpGet]
+        [HttpGet("getall")]
         public async Task<IActionResult> GetAllStudents()
         {
             var schoolId = GetSchoolId();
@@ -39,14 +39,14 @@ namespace SchoolNexAPI.Controllers
         /// </summary>
         /// <param name="id">Student ID</param>
         /// <returns>Student details</returns>
-        [HttpGet("{id}")]
+        [HttpGet("getstudent/{id}")]
         public async Task<IActionResult> GetStudentById(Guid id)
         {
             var student = await _studentService.GetByIdAsync(id);
             return student == null ? NotFound() : Ok(student);
         }
 
-        [HttpPost]
+        [HttpPost("createstudent")]
         public async Task<IActionResult> CreateStudent([FromBody] CreateStudentRequest createStudentRequest)
         {
             var schoolId = GetSchoolId();
@@ -55,7 +55,7 @@ namespace SchoolNexAPI.Controllers
             return CreatedAtAction(nameof(GetStudentById), new { id = newStudent.Id }, newStudent);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("updatestudent/{id}")]
         public async Task<IActionResult> UpdateStudent(Guid id, [FromBody] UpdateStudentRequest updateStudentRequest)
         {
             var updatedBy = User.Identity?.Name ?? "System";
@@ -63,7 +63,7 @@ namespace SchoolNexAPI.Controllers
             return updated ? NoContent() : NotFound();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("deletestudent/{id}")]
         public async Task<IActionResult> DeleteStudent(Guid id)
         {
             var deleted = await _studentService.DeleteAsync(id);

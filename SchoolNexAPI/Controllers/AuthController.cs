@@ -37,15 +37,7 @@ namespace SchoolNexAPI.Controllers
             if (!response.IsSuccess)
                 return BadRequest(response);
 
-            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(30)
-            });
-
-            return Ok(new { token = response.Token });
+            return Ok(response);
         }
 
         [Authorize]
@@ -56,6 +48,8 @@ namespace SchoolNexAPI.Controllers
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
+            Response.Cookies.Delete("accessToken");
+            Response.Cookies.Delete("refreshToken");
             await _authService.LogoutAsync(userId);
 
             return Ok(new { Message = "Logged out successfully." });
@@ -78,15 +72,7 @@ namespace SchoolNexAPI.Controllers
             if (!response.IsSuccess)
                 return Unauthorized(response);
 
-            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(30)
-            });
-
-            return Ok(new { token = response.Token });
+            return Ok(response);
         }
 
         [AllowAnonymous]
@@ -109,11 +95,12 @@ namespace SchoolNexAPI.Controllers
             return Ok(new { token = response.Token });
         }
 
-
-        [HttpGet("test")]
-        public IActionResult Test()
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
         {
-            return Ok("Test successful");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Ok(new { userId });
         }
     }
 }

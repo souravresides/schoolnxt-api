@@ -90,13 +90,25 @@ namespace SchoolNexAPI.Services.Concrete
                 Created = DateTime.UtcNow,
                 UserId = user.Id
             };
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
 
             return new AuthResponseDto
             {
                 IsSuccess = true,
                 Token = token,
-                RefreshToken = refreshToken
+                User = new UserDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    Name = user.Name
+                },
             };
         }
 
@@ -122,11 +134,11 @@ namespace SchoolNexAPI.Services.Concrete
                 return new AuthResponseDto { IsSuccess = false, Errors = new List<string> { "Invalid or already used refresh token." } };
             }
 
-            // ✅ Mark old token as used
+
             oldRefreshToken.IsUsed = true;
             await _refreshTokenRepository.UpdateAsync(oldRefreshToken);
 
-            // ✅ Generate new token pair
+
             var roles = await _userManager.GetRolesAsync(user);
             var newAccessToken = _jwtTokenGenerator.GenerateToken(user, roles);
             var newRefreshToken = GenerateRefreshToken();
@@ -143,11 +155,24 @@ namespace SchoolNexAPI.Services.Concrete
 
             await _refreshTokenRepository.AddAsync(newTokenEntity);
 
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
+
             return new AuthResponseDto
             {
                 IsSuccess = true,
                 Token = newAccessToken,
-                RefreshToken = newRefreshToken
+                User = new UserDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    Name = user.Name
+                },
             };
         }
 
@@ -157,7 +182,6 @@ namespace SchoolNexAPI.Services.Concrete
         {
             await _refreshTokenRepository.DeleteTokensByUserIdAsync(userId);
         }
-
 
         public async Task<AuthResponseDto> VerifyTwoFactorAsync(Verify2FACodeRequestDto model)
         {
@@ -176,7 +200,14 @@ namespace SchoolNexAPI.Services.Concrete
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
-            return new AuthResponseDto { IsSuccess = true, Token = token };
+            return new AuthResponseDto { IsSuccess = true, Token = token,
+                User = new UserDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    Name = user.Name
+                },
+            };
         }
     }
 }

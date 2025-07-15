@@ -18,13 +18,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(options =>
-{
-    // Creating a new authorization policy that requires users to be authenticated
-    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-    // Adding a filter to enforce the authorization policy to all controllers
-    options.Filters.Add(new AuthorizeFilter(policy));
-}).AddJsonOptions(opt =>
+builder.Services.AddControllers().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
@@ -69,7 +63,7 @@ app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<SubscriptionValidationMiddleware>();
+//app.UseMiddleware<SubscriptionValidationMiddleware>();
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())

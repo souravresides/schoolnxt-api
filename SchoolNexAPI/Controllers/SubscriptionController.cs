@@ -18,7 +18,7 @@ namespace SchoolNexAPI.Controllers
         }
 
         [HttpPost("purchase")]
-        [Authorize(Roles = "SchoolAdmin")]
+        //[Authorize(Roles = "SchoolAdmin")]
         public async Task<IActionResult> PurchaseSubscription([FromBody] SubscriptionPurchaseRequest request)
         {
             var schoolId = Guid.Parse(User.FindFirst("school_id")?.Value);

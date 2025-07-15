@@ -8,5 +8,6 @@
         public List<string> Errors { get; set; }
         public bool Is2FARequired { get; set; }
         public string TempUserId { get; set; }
-}
+        public UserDto User { get; set; }
+    }
 }
