@@ -17,9 +17,16 @@ namespace SchoolNexAPI.Middleware
 
         public async Task InvokeAsync(HttpContext context, ISchoolSubscriptionService subscriptionService)
         {
-            // Skip middleware for public endpoints (adjust as needed)
             var path = context.Request.Path.Value?.ToLower();
-            if (path != null && (path.StartsWith("/auth/login") || path.StartsWith("/auth/register") || path.StartsWith("/auth/refresh-token") || path.StartsWith("/swagger")))
+            var allowedPaths = new[]
+            {
+                "/auth/login",
+                "/auth/register",
+                "/auth/refresh-token",
+                "/subscriptiontype/plans",
+                "/swagger"
+            };
+            if (path != null && allowedPaths.Any(p => path.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
             {
                 await _next(context);
                 return;

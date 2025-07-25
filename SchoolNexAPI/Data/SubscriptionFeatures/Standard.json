@@ -1,7 +1,7 @@
 {
   "ManageStudents": true,
   "ManageEmployees": true,
-  "ManageAttendance": false,
+  "ManageAttendance": true,
   "ManageFees": false,
   "ViewReports": true,
   "SendNotifications": false,
