@@ -7,7 +7,7 @@ namespace SchoolNexAPI.Controllers
 {
     [Route("School")]
     //[AuthorizeFeature("ManageFees")]
-    public class SchoolController : ControllerBase
+    public class SchoolController : BaseController
     {
         private readonly ISchoolService _schoolService;
 

@@ -7,6 +7,7 @@ namespace SchoolNexAPI.Services.Abstract
         Task<IEnumerable<CustomFieldDto>> GetAllAsync(Guid schoolId, string targetEntity);
         Task<CustomFieldDto> GetByIdAsync(Guid id);
         Task<CustomFieldDto> CreateAsync(Guid schoolId, CreateCustomFieldRequest request, string createdBy);
+        Task<bool> ReorderFieldsAsync(Guid schoolId, List<ReorderCustomFieldRequest> fields, string updatedBy);
         Task<bool> UpdateAsync(UpdateCustomFieldRequest request, string updatedBy);
         Task<bool> DeleteAsync(Guid id);
     }

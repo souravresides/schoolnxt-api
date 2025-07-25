@@ -8,7 +8,7 @@ namespace SchoolNexAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class SubscriptionController : ControllerBase
+    public class SubscriptionController : BaseController
     {
         private readonly ISubscriptionService _subscriptionService;
 
@@ -21,8 +21,7 @@ namespace SchoolNexAPI.Controllers
         //[Authorize(Roles = "SchoolAdmin")]
         public async Task<IActionResult> PurchaseSubscription([FromBody] SubscriptionPurchaseRequest request)
         {
-            var schoolId = Guid.Parse(User.FindFirst("school_id")?.Value);
-
+            var schoolId = GetSchoolId();
             var result = await _subscriptionService.CreateSubscriptionOrderAsync(schoolId, request);
             return Ok(result);
         }

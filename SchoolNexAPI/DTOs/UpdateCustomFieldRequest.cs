@@ -7,6 +7,7 @@
         public string FieldType { get; set; }
         public bool IsRequired { get; set; }
         public int DisplayOrder { get; set; }
+        public List<string>? Options { get; set; }
         public string TargetEntity { get; set; }
     }
 }

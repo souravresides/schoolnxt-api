@@ -1,8 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data;
 using SchoolNexAPI.DTOs;
+using SchoolNexAPI.Migrations;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
+using System.Net;
+using System.Security.Claims;
+using static System.Collections.Specialized.BitVector32;
 
 namespace SchoolNexAPI.Services.Concrete
 {
@@ -22,7 +27,11 @@ namespace SchoolNexAPI.Services.Concrete
                 Id = Guid.NewGuid(),
                 SchoolId = schoolId,
                 FullName = request.FullName,
+                Class = request.Class,
+                Section = request.Section,
                 DateOfBirth = request.DateOfBirth,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
                 Gender = request.Gender,
                 AcademicYearId = request.AcademicYearId,
                 CreatedAt = DateTime.UtcNow,
@@ -73,8 +82,15 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 Id = student.Id,
                 FullName = student.FullName,
+                Class = student.Class,
+                Section = student.Section,
                 DateOfBirth = student.DateOfBirth,
+                Email = student.Email,
+                PhoneNumber = student.PhoneNumber,
                 Gender = student.Gender,
+                FatherName = student.FatherName,
+                MotherName = student.MotherName,
+                Address = student.Address,
                 AcademicYearId = student.AcademicYearId,
                 CustomFields = student.CustomFieldValuesList.Select(v => new CustomFieldDto
                 {
@@ -83,7 +99,8 @@ namespace SchoolNexAPI.Services.Concrete
                     FieldType = v.CustomFieldDefinition.FieldType,
                     IsRequired = v.CustomFieldDefinition.IsRequired,
                     TargetEntity = v.CustomFieldDefinition.EntityType,
-                    DisplayOrder = v.CustomFieldDefinition.DisplayOrder
+                    DisplayOrder = v.CustomFieldDefinition.DisplayOrder,
+                    FieldValue = v.Value
                 }).ToList()
             };
         }
@@ -100,9 +117,20 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 Id = s.Id,
                 FullName = s.FullName,
+                Section = s.Section,
+                Class = s.Class,
+                Email = s.Email,
+                PhoneNumber = s.PhoneNumber,
                 DateOfBirth = s.DateOfBirth,
                 Gender = s.Gender,
+                FatherName = s.FatherName,
+                MotherName = s.MotherName,
+                Address = s.Address,
                 AcademicYearId = s.AcademicYearId,
+                CreatedAt = s.CreatedAt,
+                CreatedBy = s.CreatedBy,
+                UpdatedAt = s.UpdatedAt,
+                UpdatedBy = s.UpdatedBy,
                 CustomFields = s.CustomFieldValuesList.Select(v => new CustomFieldDto
                 {
                     Id = v.CustomFieldDefinitionId,
@@ -110,7 +138,8 @@ namespace SchoolNexAPI.Services.Concrete
                     FieldType = v.CustomFieldDefinition.FieldType,
                     IsRequired = v.CustomFieldDefinition.IsRequired,
                     TargetEntity = v.CustomFieldDefinition.EntityType,
-                    DisplayOrder = v.CustomFieldDefinition.DisplayOrder
+                    DisplayOrder = v.CustomFieldDefinition.DisplayOrder,
+                    FieldValue = v.Value
                 }).ToList()
             });
         }
@@ -123,8 +152,15 @@ namespace SchoolNexAPI.Services.Concrete
             if (student == null) return false;
 
             student.FullName = request.FullName;
+            student.Section = request.Section;
+            student.Class = request.Class;
+            student.Email = request.Email;
+            student.PhoneNumber = request.PhoneNumber;
             student.DateOfBirth = request.DateOfBirth;
             student.Gender = request.Gender;
+            student.FatherName = request.FatherName;
+            student.MotherName = request.MotherName;
+            student.Address = request.Address;
             student.AcademicYearId = request.AcademicYearId;
             student.UpdatedAt = DateTime.UtcNow;
             student.UpdatedBy = updatedBy;

@@ -141,7 +141,7 @@ namespace SchoolNexAPI.Services.Concrete
         public async Task<SchoolModel> GetSchoolByIdAsync(Guid id)
         {
             return await _context.Schools
-                .Include(s => s.SchoolSubscription)
+                .Include(s => s.SchoolSubscription).ThenInclude(x => x.SubscriptionType)
                 .Include(s => s.SchoolSettings)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }

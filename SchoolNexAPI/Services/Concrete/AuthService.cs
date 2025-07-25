@@ -21,7 +21,7 @@ namespace SchoolNexAPI.Services.Concrete
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(UserManager<AppUserModel> userManager, IJwtTokenGenerator jwtTokenGenerator, 
+        public AuthService(UserManager<AppUserModel> userManager, IJwtTokenGenerator jwtTokenGenerator,
             EmailSender emailSender, IRefreshTokenRepository refreshTokenRepository, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
@@ -73,7 +73,7 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 var code = await _userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
                 await _emailSender.SendAsync(user.Email, "Your 2FA Code", $"Your login code is: {code}");
-                return new AuthResponseDto { Is2FARequired = true, TempUserId =  user.Id};
+                return new AuthResponseDto { Is2FARequired = true, TempUserId = user.Id };
             }
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -94,7 +94,7 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(30)
             });
             await _refreshTokenRepository.AddAsync(refreshTokenEntity);
@@ -121,14 +121,24 @@ namespace SchoolNexAPI.Services.Concrete
         }
         public async Task<AuthResponseDto> RefreshTokenAsync(string accessToken, string refreshToken)
         {
-            var principal = _jwtTokenGenerator.GetPrincipalFromExpiredToken(accessToken);
-            var userId = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? userId = null;
+            RefreshTokenModel oldRefreshToken = null;
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                var principal = _jwtTokenGenerator.GetPrincipalFromExpiredToken(accessToken);
+                userId = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            else
+            {
+                oldRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+                userId = oldRefreshToken?.UserId;
+            }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return new AuthResponseDto { IsSuccess = false, Errors = new List<string> { "User not found." } };
 
-            var oldRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+
             if (oldRefreshToken == null || oldRefreshToken.IsExpired || oldRefreshToken.UserId != user.Id || oldRefreshToken.IsUsed || oldRefreshToken.IsRevoked)
             {
                 return new AuthResponseDto { IsSuccess = false, Errors = new List<string> { "Invalid or already used refresh token." } };
@@ -155,11 +165,11 @@ namespace SchoolNexAPI.Services.Concrete
 
             await _refreshTokenRepository.AddAsync(newTokenEntity);
 
-            _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(30)
             });
 
@@ -200,7 +210,10 @@ namespace SchoolNexAPI.Services.Concrete
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
-            return new AuthResponseDto { IsSuccess = true, Token = token,
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Token = token,
                 User = new UserDto
                 {
                     UserId = user.Id,

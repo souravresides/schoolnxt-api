@@ -7,7 +7,7 @@ namespace SchoolNexAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomFieldController : ControllerBase
+    public class CustomFieldController : BaseController
     {
         private readonly ICustomFieldService _customFieldService;
 
@@ -54,5 +54,14 @@ namespace SchoolNexAPI.Controllers
             var result = await _customFieldService.DeleteAsync(id);
             return result ? Ok() : NotFound();
         }
+
+        [HttpPut("{schoolId}/reorder")]
+        public async Task<IActionResult> ReorderFields(Guid schoolId, [FromBody] List<ReorderCustomFieldRequest> reorderedFields)
+        {
+            var updatedBy = User.Identity?.Name ?? "System";
+            var result = await _customFieldService.ReorderFieldsAsync(schoolId, reorderedFields, updatedBy);
+            return Ok(result);
+        }
+
     }
 }

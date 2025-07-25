@@ -4,6 +4,7 @@
     {
         public Guid Id { get; set; }
         public string FieldName { get; set; }
+        public string FieldValue { get; set; }
         public string FieldType { get; set; }
         public bool IsRequired { get; set; }
         public int DisplayOrder { get; set; }

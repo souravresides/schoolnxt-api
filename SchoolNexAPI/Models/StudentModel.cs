@@ -20,6 +20,10 @@ namespace SchoolNexAPI.Models
         public string PhoneNumber { get; set; }
         public string Gender { get; set; }
 
+        public string FatherName { get; set; }
+        public string MotherName { get; set; }
+        public string Address { get; set; }
+
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }

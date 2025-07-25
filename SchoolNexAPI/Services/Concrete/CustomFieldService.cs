@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data;
 using SchoolNexAPI.DTOs;
 using SchoolNexAPI.Models;
@@ -98,11 +99,34 @@ namespace SchoolNexAPI.Services.Concrete
             field.IsRequired = request.IsRequired;
             field.DisplayOrder = request.DisplayOrder;
             field.UpdatedAt = DateTime.UtcNow;
+            field.FieldOptionsJson = (request.Options != null && request.Options.Count > 0)
+            ? JsonSerializer.Serialize(request.Options)
+            : null;
             field.UpdatedBy = updatedBy;
 
             _context.CustomFieldDefinitions.Update(field);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<bool> ReorderFieldsAsync(Guid schoolId, List<ReorderCustomFieldRequest> fields, string updatedBy)
+        {
+            foreach (var field in fields)
+            {
+                var existingField = await _context.CustomFieldDefinitions
+                    .FirstOrDefaultAsync(f => f.Id == field.Id && f.SchoolId == schoolId);
+
+                if (existingField != null)
+                {
+                    existingField.DisplayOrder = field.DisplayOrder;
+                    existingField.UpdatedBy = updatedBy;
+                    existingField.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
 
         public async Task<bool> DeleteAsync(Guid id)
         {
@@ -111,7 +135,7 @@ namespace SchoolNexAPI.Services.Concrete
 
             field.IsVisible = false;
             field.UpdatedAt = DateTime.UtcNow;
-            _context.CustomFieldDefinitions.Update(field);
+            _context.CustomFieldDefinitions.Remove(field);
             return await _context.SaveChangesAsync() > 0;
         }
 

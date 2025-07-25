@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace SchoolNexAPI.Controllers
 {
     [Route("Auth")]    
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
         public AuthController(IAuthService authService)
@@ -62,11 +62,8 @@ namespace SchoolNexAPI.Controllers
             var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var refreshToken = Request.Cookies["refreshToken"];
 
-            if (string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(refreshToken))
-                return BadRequest(new { Message = "No tokens provided." });
-
-            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
-                return BadRequest(new { Message = "Invalid tokens." });
+            if (string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new { Message = "Invalid session" });
 
             var response = await _authService.RefreshTokenAsync(accessToken, refreshToken);
             if (!response.IsSuccess)

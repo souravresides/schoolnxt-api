@@ -43,6 +43,8 @@ builder.Services.AddScoped<ICustomFieldService, CustomFieldService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddTransient<EmailSender>();
 builder.Services.AddHostedService<RefreshTokenCleanupService>();
+builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -63,7 +65,7 @@ app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseMiddleware<SubscriptionValidationMiddleware>();
+app.UseMiddleware<SubscriptionValidationMiddleware>();
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())

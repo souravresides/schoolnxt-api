@@ -7,7 +7,7 @@ namespace SchoolNexAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class StudentController : ControllerBase
+    public class StudentController : BaseController
     {
         private readonly IStudentService _studentService;
         private readonly ILogger<StudentController> _logger;
@@ -16,14 +16,6 @@ namespace SchoolNexAPI.Controllers
         {
             _studentService = studentService;
             _logger = logger;
-        }
-
-        private Guid GetSchoolId()
-        {
-            var schoolIdClaim = User.FindFirst("school_id")?.Value;
-            return Guid.TryParse(schoolIdClaim, out var schoolId)
-                ? schoolId
-                : throw new UnauthorizedAccessException("Invalid or missing school_id.");
         }
 
         [HttpGet("getall")]
