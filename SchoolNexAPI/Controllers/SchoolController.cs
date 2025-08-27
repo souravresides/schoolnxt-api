@@ -6,7 +6,7 @@ using SchoolNexAPI.Services.Abstract;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Route("api/School")]
+    [Route("api/[controller]")]
     //[AuthorizeFeature("ManageFees")]
     public class SchoolController : BaseController
     {

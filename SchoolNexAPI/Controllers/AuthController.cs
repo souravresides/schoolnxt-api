@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Route("api/Auth")]    
+    [Route("api/[controller]")]    
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
