@@ -24,6 +24,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 app.UseCors("AllowFrontendDev");
 
 if (app.Environment.IsDevelopment())
@@ -31,14 +32,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseSwagger();
+
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.UseMiddleware<SubscriptionValidationMiddleware>();
+
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
@@ -48,7 +56,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.ApplyMigration();
-
 
 app.Run();
 

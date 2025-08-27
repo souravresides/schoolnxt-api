@@ -1,4 +1,5 @@
 ﻿using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Auth;
 
 namespace SchoolNexAPI.Services.Abstract
 {

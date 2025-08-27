@@ -1,4 +1,4 @@
-﻿namespace SchoolNexAPI.DTOs
+﻿namespace SchoolNexAPI.DTOs.School
 {
     public class SchoolSettingsRequestDto
     {

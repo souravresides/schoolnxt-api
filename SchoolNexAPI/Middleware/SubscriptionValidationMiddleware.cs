@@ -20,11 +20,11 @@ namespace SchoolNexAPI.Middleware
             var path = context.Request.Path.Value?.ToLower();
             var allowedPaths = new[]
             {
-                "/auth/login",
-                "/auth/register",
-                "/auth/refresh-token",
-                "/subscriptiontype/plans",
-                "/swagger"
+                "/api/auth/login",
+                "/api/auth/register",
+                "/api/auth/refresh-token",
+                "/api/subscriptiontype/plans",
+                "/api/swagger"
             };
             if (path != null && allowedPaths.Any(p => path.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
             {

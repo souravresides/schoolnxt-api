@@ -5,7 +5,7 @@ using SchoolNexAPI.Services.Abstract;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class StudentController : BaseController
     {
@@ -26,11 +26,6 @@ namespace SchoolNexAPI.Controllers
             return Ok(students);
         }
 
-        /// <summary>
-        /// Get student details by ID.
-        /// </summary>
-        /// <param name="id">Student ID</param>
-        /// <returns>Student details</returns>
         [HttpGet("getstudent/{id}")]
         public async Task<IActionResult> GetStudentById(Guid id)
         {

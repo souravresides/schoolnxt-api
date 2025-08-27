@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Razorpay.Api;
 using SchoolNexAPI.Data;
-using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Subscription;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
 

@@ -1,4 +1,4 @@
-﻿namespace SchoolNexAPI.DTOs
+﻿namespace SchoolNexAPI.DTOs.Auth
 {
     public class RefreshTokenRequestDto
     {

@@ -21,7 +21,7 @@ namespace SchoolNexAPI.Data
         public DbSet<StudentCustomFieldValueModel> StudentCustomFieldValues { get; set; }
         public DbSet<AcademicYearModel> AcademicYears { get; set; }
         public DbSet<StudentEnrollmentModel> StudentEnrollments { get; set; }
-
+        public DbSet<EmployeeModel> Employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

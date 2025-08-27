@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data;
-using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Subscription;
 using SchoolNexAPI.Migrations;
 using SchoolNexAPI.Services.Abstract;
 using System.Text.Json;

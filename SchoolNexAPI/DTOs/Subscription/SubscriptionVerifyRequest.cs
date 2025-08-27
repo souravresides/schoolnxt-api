@@ -1,7 +1,7 @@
 ﻿using Razorpay.Api;
 using SchoolNexAPI.Models;
 
-namespace SchoolNexAPI.DTOs
+namespace SchoolNexAPI.DTOs.Subscription
 {
     public class SubscriptionVerifyRequest
     {

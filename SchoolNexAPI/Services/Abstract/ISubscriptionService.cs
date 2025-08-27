@@ -1,4 +1,4 @@
-﻿using SchoolNexAPI.DTOs;
+﻿using SchoolNexAPI.DTOs.Subscription;
 using SchoolNexAPI.Models;
 
 namespace SchoolNexAPI.Services.Abstract

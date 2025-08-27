@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Auth;
 using SchoolNexAPI.Services.Abstract;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Route("Auth")]    
+    [Route("api/Auth")]    
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;

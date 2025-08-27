@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Subscription;
 using SchoolNexAPI.Services.Abstract;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class SubscriptionController : BaseController
     {

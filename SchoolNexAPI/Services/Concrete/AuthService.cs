@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Auth;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Repositories.Abstract;
 using SchoolNexAPI.Security;

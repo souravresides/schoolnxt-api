@@ -1,6 +1,6 @@
 ﻿using SchoolNexAPI.Models;
 
-namespace SchoolNexAPI.DTOs
+namespace SchoolNexAPI.DTOs.Subscription
 {
     public class SubscriptionPurchaseRequest
     {

@@ -4,7 +4,7 @@ using SchoolNexAPI.Services.Abstract;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Route("SubscriptionType")]
+    [Route("api/SubscriptionType")]
     public class SubscriptionTypeController : BaseController
     {
         private readonly ISubscriptionTypeService _subscriptionService;
