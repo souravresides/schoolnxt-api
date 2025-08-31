@@ -10,5 +10,10 @@ namespace SchoolNexAPI.Services.Abstract
         Task<AuthResponseDto> VerifyTwoFactorAsync(Verify2FACodeRequestDto model);
         Task LogoutAsync(string userId);
         Task<AuthResponseDto> RefreshTokenAsync(string token, string refreshToken);
+        Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordDto model);
+        Task<AuthResponseDto> ForgotPasswordAsync(ForgotPasswordDto model);
+        Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordDto model);
+
+
     }
 }

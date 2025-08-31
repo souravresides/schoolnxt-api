@@ -24,6 +24,7 @@ namespace SchoolNexAPI.Extensions
             builder.Services.AddScoped<ICustomFieldService, CustomFieldService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddTransient<EmailSender>();
+            builder.Services.AddScoped<IAdministrativeService, AdministrativeService>();
             builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
 
             return builder;

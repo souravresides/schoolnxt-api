@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Administrative;
 using SchoolNexAPI.DTOs.Auth;
 using SchoolNexAPI.Services.Abstract;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,6 +28,7 @@ namespace SchoolNexAPI.Controllers
 
             return Ok(new { Message = "User account created successfully." });
         }
+
 
         [AllowAnonymous]
         [HttpPost("login")]
@@ -92,6 +95,37 @@ namespace SchoolNexAPI.Controllers
 
             return Ok(new { token = response.Token });
         }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+        {
+            var response = await _authService.ChangePasswordAsync(model);
+            if (!response.IsSuccess)
+                return BadRequest(response);
+            return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
+        {
+            var response = await _authService.ForgotPasswordAsync(model);
+            if (!response.IsSuccess)
+                return BadRequest(response);
+            return Ok(response);
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+        {
+            var response = await _authService.ResetPasswordAsync(model);
+            if (!response.IsSuccess)
+                return BadRequest(response);
+            return Ok(response);
+        }
+
 
         [Authorize]
         [HttpGet("me")]

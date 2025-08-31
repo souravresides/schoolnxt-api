@@ -36,7 +36,7 @@ namespace SchoolNexAPI.Security
                 Audience = _jwtOptions.Audience,
                 Issuer = _jwtOptions.Issuer,
                 Subject = new ClaimsIdentity(claimsList),
-                Expires = DateTime.UtcNow.AddMinutes(60),
+                Expires = DateTime.UtcNow.AddMinutes(300),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

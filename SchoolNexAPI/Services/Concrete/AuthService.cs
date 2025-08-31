@@ -38,6 +38,8 @@ namespace SchoolNexAPI.Services.Concrete
 
             return ip ?? "Unknown";
         }
+
+
         public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto model)
         {
             var user = new AppUserModel
@@ -185,6 +187,76 @@ namespace SchoolNexAPI.Services.Concrete
                     Name = user.Name
                 },
             };
+        }
+
+        public async Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordDto model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { "User not found." }
+                };
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Errors = result.Errors.Select(e => e.Description).ToList()
+                };
+            }
+
+            return new AuthResponseDto { IsSuccess = true };
+        }
+
+        public async Task<AuthResponseDto> ForgotPasswordAsync(ForgotPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { "User not found." }
+                };
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"https://yourapp.com/reset-password?email={user.Email}&token={Uri.EscapeDataString(token)}";
+
+            await _emailSender.SendAsync(user.Email, "Reset Password", $"Click here to reset your password: {resetLink}");
+
+            return new AuthResponseDto { IsSuccess = true };
+        }
+
+        public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { "User not found." }
+                };
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Errors = result.Errors.Select(e => e.Description).ToList()
+                };
+            }
+
+            return new AuthResponseDto { IsSuccess = true };
         }
 
 

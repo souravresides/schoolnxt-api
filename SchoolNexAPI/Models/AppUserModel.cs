@@ -13,8 +13,6 @@ namespace SchoolNexAPI.Models
 
         public DateTime? UpdatedAt { get; set; }
 
-        //public StudentModel Student { get; set; }
-
-        //public ParentModel Parent { get; set; }
+        public string? ProfilePicture { get; set; }
     }
 }
