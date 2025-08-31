@@ -19,6 +19,7 @@ namespace SchoolNexAPI.Services.Concrete
 
         public async Task<Guid> CreateSchoolAsync(SchoolRequestDto dto)
         {
+            var freeTrialType = await _context.SubscriptionType.FirstOrDefaultAsync(s => s.Name == "Free Trial");
             var school = new SchoolModel
             {
                 Id = Guid.NewGuid(),
@@ -42,7 +43,7 @@ namespace SchoolNexAPI.Services.Concrete
                 SchoolSubscription = new SchoolSubscriptionModel
                 {
                     Id = Guid.NewGuid(),
-                    SubscriptionTypeId = Guid.Parse("d1f8c5b2-3e4f-4c9a-8b6d-7a0e1c2f3b4a"),
+                    SubscriptionTypeId = freeTrialType.Id,
                     SubscriptionExpiresOn = DateTime.UtcNow.AddDays(7),
                     Remarks = "Initial Subscription",
                     SubscriptionTerm = SubscriptionTerm.FreeTrial

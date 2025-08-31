@@ -1,4 +1,5 @@
 ﻿using SchoolNexAPI.Data;
+using SchoolNexAPI.DTOs;
 using SchoolNexAPI.Repositories.Abstract;
 using SchoolNexAPI.Repositories.Concrete;
 using SchoolNexAPI.Security;
@@ -26,6 +27,9 @@ namespace SchoolNexAPI.Extensions
             builder.Services.AddTransient<EmailSender>();
             builder.Services.AddScoped<IAdministrativeService, AdministrativeService>();
             builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
+            builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
+            builder.Services.AddScoped<IAzureService, AzureService>();
+
 
             return builder;
         }

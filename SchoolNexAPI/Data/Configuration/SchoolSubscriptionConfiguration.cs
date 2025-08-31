@@ -9,8 +9,8 @@ namespace SchoolNexAPI.Data.Configuration
         public void Configure(EntityTypeBuilder<SchoolSubscriptionModel> builder)
         {
             builder.HasOne(s => s.SubscriptionType)
-                   .WithOne(sub => sub.SchoolSubscription)
-                   .HasForeignKey<SchoolSubscriptionModel>(sub => sub.SubscriptionTypeId);
+                    .WithMany(sub => sub.SchoolSubscriptions) // one-to-many
+                    .HasForeignKey(sub => sub.SubscriptionTypeId);
         }
     }
 }

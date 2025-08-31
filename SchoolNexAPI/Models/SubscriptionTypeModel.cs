@@ -16,6 +16,7 @@ namespace SchoolNexAPI.Models
         public string Description { get; set; }
 
         //Relationships
-        public SchoolSubscriptionModel SchoolSubscription { get; set; }
+        public ICollection<SchoolSubscriptionModel> SchoolSubscriptions { get; set; }
+        = new List<SchoolSubscriptionModel>();
     }
 }

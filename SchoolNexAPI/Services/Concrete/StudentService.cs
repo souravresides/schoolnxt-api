@@ -7,6 +7,7 @@ using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
 using System.Net;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Collections.Specialized.BitVector32;
 
 namespace SchoolNexAPI.Services.Concrete
@@ -107,13 +108,17 @@ namespace SchoolNexAPI.Services.Concrete
 
         public async Task<IEnumerable<StudentDto>> GetAllAsync(Guid schoolId)
         {
-            var students = await _context.Students
-                .Where(s => s.SchoolId == schoolId)
+            IQueryable<StudentModel> query = _context.Students
                 .Include(s => s.CustomFieldValuesList)
-                    .ThenInclude(v => v.CustomFieldDefinition)
-                .ToListAsync();
+                    .ThenInclude(v => v.CustomFieldDefinition);
 
-            return students.Select(s => new StudentDto
+            if (schoolId != Guid.Empty)
+            {
+                // SchoolAdmin → filter by school
+                query = query.Where(s => s.SchoolId == schoolId);
+            }
+
+            return query.Select(s => new StudentDto
             {
                 Id = s.Id,
                 FullName = s.FullName,

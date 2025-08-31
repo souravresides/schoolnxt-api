@@ -20,6 +20,8 @@ namespace SchoolNexAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] SchoolRequestDto dto)
         {
+            var userId = GetUserId();
+            dto.CreatedBy = userId.ToString();
             var id = await _schoolService.CreateSchoolAsync(dto);
             return Ok(id);
         }

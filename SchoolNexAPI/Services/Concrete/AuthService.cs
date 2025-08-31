@@ -21,15 +21,18 @@ namespace SchoolNexAPI.Services.Concrete
         private readonly EmailSender _emailSender;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAzureService _azureService;
 
         public AuthService(UserManager<AppUserModel> userManager, IJwtTokenGenerator jwtTokenGenerator,
-            EmailSender emailSender, IRefreshTokenRepository refreshTokenRepository, IHttpContextAccessor httpContextAccessor)
+            EmailSender emailSender, IRefreshTokenRepository refreshTokenRepository, IHttpContextAccessor httpContextAccessor,
+            IAzureService azureService)
         {
             _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
             this._emailSender = emailSender;
             this._refreshTokenRepository = refreshTokenRepository;
             this._httpContextAccessor = httpContextAccessor;
+            this._azureService = azureService;
         }
         public string GetClientIp()
         {
@@ -110,7 +113,9 @@ namespace SchoolNexAPI.Services.Concrete
                 {
                     UserId = user.Id,
                     Email = user.Email,
-                    Name = user.Name
+                    Name = user.Name,
+                    Roles = roles.ToList(),
+                    ProfilePicture = await _azureService.GetSasUrlAsync(user.ProfilePicture)
                 },
             };
         }

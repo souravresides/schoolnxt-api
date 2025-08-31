@@ -4,6 +4,7 @@ using SchoolNexAPI.DTOs.Administrative;
 using SchoolNexAPI.DTOs.Auth;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
+using System.Security.Claims;
 
 namespace SchoolNexAPI.Services.Concrete
 {
@@ -11,23 +12,27 @@ namespace SchoolNexAPI.Services.Concrete
     {
         private readonly UserManager<AppUserModel> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IAzureService _azureService;
 
-        public AdministrativeService(UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager)
+        public AdministrativeService(UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IAzureService azureService)
         {
             _userManager = userManager;
             this._roleManager = roleManager;
+            this._azureService = azureService;
         }
-        public async Task<AuthResponseDto> GetUsersAsync()
+        public async Task<AuthResponseDto> GetUsersAsync(Guid schoolId)
         {
             try
             {
-                // Fetch all users from Identity
-                var users = _userManager.Users.ToList();
+                IQueryable<AppUserModel> users = _userManager.Users;
 
-                // Map them to a DTO (never return password info)
+                if(schoolId != Guid.Empty)
+                {
+                    users = users.Where(x => x.SchoolId == schoolId);
+                }
                 var userList = new List<UserDto>();
 
-                foreach (var user in users)
+                foreach (var user in users.ToList())
                 {
                     var roles = await _userManager.GetRolesAsync(user);
 
@@ -212,12 +217,16 @@ namespace SchoolNexAPI.Services.Concrete
             }
         }
 
-        public async Task<AuthResponseDto> GetUsersByRoleAsync(string roleName)
+        public async Task<AuthResponseDto> GetUsersByRoleAsync(string roleName, Guid schoolId)
         {
             try
             {
                 var users = await _userManager.GetUsersInRoleAsync(roleName);
 
+                if(schoolId != Guid.Empty)
+                {
+                    users = users.Where(x => x.SchoolId == schoolId).ToList();
+                }
                 var userList = users.Select(u => new UserDto
                 {
                     UserId = u.Id,
@@ -259,7 +268,8 @@ namespace SchoolNexAPI.Services.Concrete
                 UserId = user.Id,
                 Email = user.Email,
                 Name = user.Name,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                ProfilePicture = await _azureService.GetSasUrlAsync(user.ProfilePicture)
             };
 
             return new AuthResponseDto
@@ -268,6 +278,8 @@ namespace SchoolNexAPI.Services.Concrete
                 User = userDto
             };
         }
+
+
 
         public async Task<AuthResponseDto> UpdateUserProfileAsync(string userId, UpdateUserProfileDto model)
         {
@@ -299,7 +311,6 @@ namespace SchoolNexAPI.Services.Concrete
                 UserId = user.Id,
                 Email = user.Email,
                 Name = user.Name,
-                ProfilePicture = user.ProfilePicture,
                 PhoneNumber = user.PhoneNumber
             };
 
@@ -309,6 +320,37 @@ namespace SchoolNexAPI.Services.Concrete
                 User = updatedUserDto
             };
         }
+
+        public async Task<string> UpdateProfilePictureAsync(string userId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("Invalid file uploaded.");
+
+            // Fetch the user
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException("User not found.");
+
+            // Delete old profile picture if exists
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                await _azureService.DeleteFileAsync(user.ProfilePicture);
+            }
+
+            // Upload new picture
+            var blobName = await _azureService.UploadFileAsync(
+                file,
+                Enums.BlobEntity.Users,   // ✅ use "Users" entity instead of "Platform"
+                userId,
+                Enums.BlobCategory.ProfilePictures
+            );
+
+            user.ProfilePicture = blobName;
+            await _userManager.UpdateAsync(user);
+
+            return blobName;
+        }
+
 
     }
 }

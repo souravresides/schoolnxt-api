@@ -6,12 +6,13 @@ using SchoolNexAPI.DTOs.Administrative;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
 using SchoolNexAPI.Services.Concrete;
+using System.Security.Claims;
 
 namespace SchoolNexAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdministrativeController : ControllerBase
+    public class AdministrativeController : BaseController
     {
         private readonly IAdministrativeService _administrativeService;
         private readonly UserManager<AppUserModel> _userManager;
@@ -22,10 +23,10 @@ namespace SchoolNexAPI.Controllers
             this._userManager = userManager;
         }
         [HttpGet("users")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
-            var response = await _administrativeService.GetUsersAsync();
+            var schoolId = GetSchoolId();
+            var response = await _administrativeService.GetUsersAsync(schoolId);
 
             if (!response.IsSuccess)
                 return BadRequest(response);
@@ -74,7 +75,8 @@ namespace SchoolNexAPI.Controllers
         [HttpGet("roles/{roleName}/users")]
         public async Task<IActionResult> GetUsersByRole(string roleName)
         {
-            var response = await _administrativeService.GetUsersByRoleAsync(roleName);
+            var schoolId = GetSchoolId();
+            var response = await _administrativeService.GetUsersByRoleAsync(roleName, schoolId);
             if (!response.IsSuccess)
                 return BadRequest(response);
             return Ok(response.Users);
@@ -100,6 +102,18 @@ namespace SchoolNexAPI.Controllers
                 return BadRequest(response);
 
             return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPost("UploadProfilePicture")]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded");
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var url = await _administrativeService.UpdateProfilePictureAsync(userId, file);
+            return Ok(new { url });
         }
 
 
