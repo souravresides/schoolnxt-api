@@ -1,5 +1,6 @@
 ﻿using SchoolNexAPI.Data;
 using SchoolNexAPI.DTOs;
+using SchoolNexAPI.Helpers;
 using SchoolNexAPI.Repositories.Abstract;
 using SchoolNexAPI.Repositories.Concrete;
 using SchoolNexAPI.Security;
@@ -29,6 +30,9 @@ namespace SchoolNexAPI.Extensions
             builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
             builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
             builder.Services.AddScoped<IAzureService, AzureService>();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<UserHelper>();
+            builder.Services.AddScoped<IFileService, FileService>();
 
 
             return builder;

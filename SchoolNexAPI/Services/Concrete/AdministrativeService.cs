@@ -2,9 +2,12 @@
 using SchoolNexAPI.DTOs;
 using SchoolNexAPI.DTOs.Administrative;
 using SchoolNexAPI.DTOs.Auth;
+using SchoolNexAPI.Extensions;
+using SchoolNexAPI.Helpers;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SchoolNexAPI.Services.Concrete
 {
@@ -13,12 +16,15 @@ namespace SchoolNexAPI.Services.Concrete
         private readonly UserManager<AppUserModel> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IAzureService _azureService;
+        private readonly UserHelper _userHelper;
 
-        public AdministrativeService(UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IAzureService azureService)
+        public AdministrativeService(UserManager<AppUserModel> userManager, 
+            RoleManager<IdentityRole> roleManager, IAzureService azureService, UserHelper userHelper)
         {
             _userManager = userManager;
             this._roleManager = roleManager;
             this._azureService = azureService;
+            this._userHelper = userHelper;
         }
         public async Task<AuthResponseDto> GetUsersAsync(Guid schoolId)
         {
@@ -26,10 +32,19 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 IQueryable<AppUserModel> users = _userManager.Users;
 
-                if(schoolId != Guid.Empty)
-                {
-                    users = users.Where(x => x.SchoolId == schoolId);
-                }
+                users = users.FilterBySchool(schoolId, _userHelper.IsSuperAdmin());
+
+                //if (!_userHelper.IsSuperAdmin())
+                //{
+                //    if (schoolId != Guid.Empty)
+                //    {
+                //        users = users.Where(s => s.SchoolId == schoolId);
+                //    }
+                //    else
+                //    {
+                //        users = users.Where(s => false); // returns no students
+                //    }
+                //}
                 var userList = new List<UserDto>();
 
                 foreach (var user in users.ToList())
@@ -348,7 +363,7 @@ namespace SchoolNexAPI.Services.Concrete
             user.ProfilePicture = blobName;
             await _userManager.UpdateAsync(user);
 
-            return blobName;
+            return await _azureService.GetSasUrlAsync(blobName);
         }
 
 

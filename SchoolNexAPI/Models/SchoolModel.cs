@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolNexAPI.Models.Student;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolNexAPI.Models
 {
@@ -32,6 +33,7 @@ namespace SchoolNexAPI.Models
         public SchoolSubscriptionModel SchoolSubscription { get; set; }
         public SchoolSettingsModel SchoolSettings { get; set; }
         public List<StudentModel> Students { get; set; }
+        public List<FileRecordsModel> FileRecords { get; set; }
         public ICollection<AcademicYearModel> AcademicYears { get; set; }
     }
 }

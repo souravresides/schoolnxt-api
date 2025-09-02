@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolNexAPI.Data;
 
@@ -11,9 +12,11 @@ using SchoolNexAPI.Data;
 namespace SchoolNexAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250901021445_Migration_StudentDetails")]
+    partial class Migration_StudentDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -417,77 +420,6 @@ namespace SchoolNexAPI.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("SchoolNexAPI.Models.FileRecordsModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DocumentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Entity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FileCategory")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("FileSize")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid?>("SchoolId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UploadedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("IX_Files_CreatedAt");
-
-                    b.HasIndex("UploadedByUserId")
-                        .HasDatabaseName("IX_Files_UploadedBy");
-
-                    b.HasIndex("Entity", "EntityId")
-                        .HasDatabaseName("IX_Files_Entity");
-
-                    b.HasIndex("SchoolId", "Entity", "EntityId")
-                        .HasDatabaseName("IX_Files_School_Entity");
-
-                    b.ToTable("FileRecords");
-                });
-
             modelBuilder.Entity("SchoolNexAPI.Models.PaymentTransactionModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -777,9 +709,6 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique();
-
                     b.ToTable("StudentAdditionalDetails");
                 });
 
@@ -818,9 +747,6 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique();
-
                     b.ToTable("StudentAddresses");
                 });
 
@@ -849,9 +775,6 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StudentId")
-                        .IsUnique();
 
                     b.ToTable("StudentBanks");
                 });
@@ -897,9 +820,6 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique();
-
                     b.ToTable("StudentMedicalRecords");
                 });
 
@@ -910,6 +830,15 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdditionalDetailsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BankDetailsId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Class")
@@ -927,11 +856,12 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -940,18 +870,29 @@ namespace SchoolNexAPI.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("MedicalRecordId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoPath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PreviousSchoolId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SchoolId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Section")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TransportationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -961,26 +902,19 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Students_Email")
-                        .HasFilter("[Email] IS NOT NULL");
+                    b.HasIndex("AdditionalDetailsId");
 
-                    b.HasIndex("FullName")
-                        .HasDatabaseName("IX_Students_FullName");
+                    b.HasIndex("AddressId");
 
-                    b.HasIndex("PhoneNumber")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Students_PhoneNumber");
+                    b.HasIndex("BankDetailsId");
 
-                    b.HasIndex("SchoolId", "CreatedAt")
-                        .HasDatabaseName("IX_Students_SchoolId_CreatedAt");
+                    b.HasIndex("MedicalRecordId");
 
-                    b.HasIndex("SchoolId", "IsActive")
-                        .HasDatabaseName("IX_Students_SchoolId_IsActive");
+                    b.HasIndex("PreviousSchoolId");
 
-                    b.HasIndex("SchoolId", "AcademicYearId", "IsActive")
-                        .HasDatabaseName("IX_Students_SchoolId_Year_IsActive");
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("TransportationId");
 
                     b.ToTable("Students");
                 });
@@ -1027,9 +961,12 @@ namespace SchoolNexAPI.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("StudentModelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentModelId");
 
                     b.ToTable("StudentParents");
                 });
@@ -1069,9 +1006,6 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique();
-
                     b.ToTable("StudentPreviousSchools");
                 });
 
@@ -1094,9 +1028,6 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StudentId")
-                        .IsUnique();
 
                     b.ToTable("StudentTransportations");
                 });
@@ -1289,16 +1220,6 @@ namespace SchoolNexAPI.Migrations
                     b.Navigation("School");
                 });
 
-            modelBuilder.Entity("SchoolNexAPI.Models.FileRecordsModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.SchoolModel", "School")
-                        .WithMany("FileRecords")
-                        .HasForeignKey("SchoolId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("School");
-                });
-
             modelBuilder.Entity("SchoolNexAPI.Models.RefreshTokenModel", b =>
                 {
                     b.HasOne("SchoolNexAPI.Models.AppUserModel", "User")
@@ -1340,92 +1261,71 @@ namespace SchoolNexAPI.Migrations
                     b.Navigation("SubscriptionType");
                 });
 
-            modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentAdditionalDetailsModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithOne("AdditionalDetails")
-                        .HasForeignKey("SchoolNexAPI.Models.Student.StudentAdditionalDetailsModel", "StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentAddressModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithOne("Address")
-                        .HasForeignKey("SchoolNexAPI.Models.Student.StudentAddressModel", "StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentBankDetailsModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithOne("BankDetails")
-                        .HasForeignKey("SchoolNexAPI.Models.Student.StudentBankDetailsModel", "StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentMedicalRecordModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithOne("MedicalRecord")
-                        .HasForeignKey("SchoolNexAPI.Models.Student.StudentMedicalRecordModel", "StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentModel", b =>
                 {
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentAdditionalDetailsModel", "AdditionalDetails")
+                        .WithMany()
+                        .HasForeignKey("AdditionalDetailsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentAddressModel", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentBankDetailsModel", "BankDetails")
+                        .WithMany()
+                        .HasForeignKey("BankDetailsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentMedicalRecordModel", "MedicalRecord")
+                        .WithMany()
+                        .HasForeignKey("MedicalRecordId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentPreviousSchoolModel", "PreviousSchool")
+                        .WithMany()
+                        .HasForeignKey("PreviousSchoolId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("SchoolNexAPI.Models.SchoolModel", "School")
                         .WithMany("Students")
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentTransportationModel", "Transportation")
+                        .WithMany()
+                        .HasForeignKey("TransportationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AdditionalDetails");
+
+                    b.Navigation("Address");
+
+                    b.Navigation("BankDetails");
+
+                    b.Navigation("MedicalRecord");
+
+                    b.Navigation("PreviousSchool");
+
                     b.Navigation("School");
+
+                    b.Navigation("Transportation");
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentParentModel", b =>
                 {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
+                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", null)
                         .WithMany("Parents")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentPreviousSchoolModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithOne("PreviousSchool")
-                        .HasForeignKey("SchoolNexAPI.Models.Student.StudentPreviousSchoolModel", "StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentTransportationModel", b =>
-                {
-                    b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithOne("Transportation")
-                        .HasForeignKey("SchoolNexAPI.Models.Student.StudentTransportationModel", "StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
+                        .HasForeignKey("StudentModelId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.StudentCustomFieldValueModel", b =>
@@ -1483,8 +1383,6 @@ namespace SchoolNexAPI.Migrations
                 {
                     b.Navigation("AcademicYears");
 
-                    b.Navigation("FileRecords");
-
                     b.Navigation("SchoolSettings")
                         .IsRequired();
 
@@ -1496,29 +1394,11 @@ namespace SchoolNexAPI.Migrations
 
             modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentModel", b =>
                 {
-                    b.Navigation("AdditionalDetails")
-                        .IsRequired();
-
-                    b.Navigation("Address")
-                        .IsRequired();
-
-                    b.Navigation("BankDetails")
-                        .IsRequired();
-
                     b.Navigation("CustomFieldValuesList");
 
                     b.Navigation("Enrollments");
 
-                    b.Navigation("MedicalRecord")
-                        .IsRequired();
-
                     b.Navigation("Parents");
-
-                    b.Navigation("PreviousSchool")
-                        .IsRequired();
-
-                    b.Navigation("Transportation")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.SubscriptionTypeModel", b =>

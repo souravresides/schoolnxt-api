@@ -19,10 +19,10 @@ namespace SchoolNexAPI.Controllers
         }
 
         [HttpGet("getall")]
-        public async Task<IActionResult> GetAllStudents()
+        public async Task<IActionResult> GetAllStudents([FromQuery] string status = "all")
         {
             var schoolId = GetSchoolId();
-            var students = await _studentService.GetAllAsync(schoolId);
+            var students = await _studentService.GetAllAsync(schoolId, status);
             return Ok(students);
         }
 
@@ -46,7 +46,7 @@ namespace SchoolNexAPI.Controllers
         public async Task<IActionResult> UpdateStudent(Guid id, [FromBody] UpdateStudentRequest updateStudentRequest)
         {
             var updatedBy = User.Identity?.Name ?? "System";
-            var updated = await _studentService.UpdateAsync(id, updateStudentRequest, updatedBy);
+            var updated = await _studentService.UpdateAsync(id, GetSchoolId(), updateStudentRequest, updatedBy);
             return updated ? NoContent() : NotFound();
         }
 
@@ -56,5 +56,23 @@ namespace SchoolNexAPI.Controllers
             var deleted = await _studentService.DeleteAsync(id);
             return deleted ? NoContent() : NotFound();
         }
+
+        [HttpPost("uploadphoto/{id}")]
+        public async Task<IActionResult> UploadPhoto(Guid id, IFormFile photo)
+        {
+            if (photo == null || photo.Length == 0)
+                return BadRequest("Invalid photo file.");
+
+            var schoolId = GetSchoolId();
+            var updatedBy = User.Identity?.Name ?? "System";
+
+            var photoPath = await _studentService.UploadPhotoAsync(id, schoolId, photo, updatedBy);
+
+            return photoPath != null
+                ? Ok(new { Message = "Photo uploaded successfully", PhotoUrl = photoPath })
+                : StatusCode(500, "Error uploading photo");
+        }
+
+
     }
 }

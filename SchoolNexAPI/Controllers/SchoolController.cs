@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SchoolNexAPI.Attributes;
 using SchoolNexAPI.DTOs.School;
 using SchoolNexAPI.DTOs.Subscription;
@@ -6,8 +7,8 @@ using SchoolNexAPI.Services.Abstract;
 
 namespace SchoolNexAPI.Controllers
 {
+    [Authorize(Roles ="SuperAdmin")]
     [Route("api/[controller]")]
-    //[AuthorizeFeature("ManageFees")]
     public class SchoolController : BaseController
     {
         private readonly ISchoolService _schoolService;

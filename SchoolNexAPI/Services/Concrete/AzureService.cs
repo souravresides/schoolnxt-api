@@ -78,6 +78,5 @@ namespace SchoolNexAPI.Services.Concrete
             return blobName;
         }
 
-
     }
 }

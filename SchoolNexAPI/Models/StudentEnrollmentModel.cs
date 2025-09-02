@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolNexAPI.Models.Student;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolNexAPI.Models
 {

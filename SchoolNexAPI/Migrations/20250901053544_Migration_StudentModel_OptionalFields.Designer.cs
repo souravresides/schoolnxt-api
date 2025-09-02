@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolNexAPI.Data;
 
@@ -11,9 +12,11 @@ using SchoolNexAPI.Data;
 namespace SchoolNexAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250901053544_Migration_StudentModel_OptionalFields")]
+    partial class Migration_StudentModel_OptionalFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -423,10 +426,6 @@ namespace SchoolNexAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -435,10 +434,6 @@ namespace SchoolNexAPI.Migrations
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DocumentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Entity")
                         .IsRequired()
@@ -927,11 +922,11 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -942,7 +937,7 @@ namespace SchoolNexAPI.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoPath")
                         .HasColumnType("nvarchar(max)");
@@ -961,26 +956,7 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Students_Email")
-                        .HasFilter("[Email] IS NOT NULL");
-
-                    b.HasIndex("FullName")
-                        .HasDatabaseName("IX_Students_FullName");
-
-                    b.HasIndex("PhoneNumber")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Students_PhoneNumber");
-
-                    b.HasIndex("SchoolId", "CreatedAt")
-                        .HasDatabaseName("IX_Students_SchoolId_CreatedAt");
-
-                    b.HasIndex("SchoolId", "IsActive")
-                        .HasDatabaseName("IX_Students_SchoolId_IsActive");
-
-                    b.HasIndex("SchoolId", "AcademicYearId", "IsActive")
-                        .HasDatabaseName("IX_Students_SchoolId_Year_IsActive");
+                    b.HasIndex("SchoolId");
 
                     b.ToTable("Students");
                 });

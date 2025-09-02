@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data.Configuration;
 using SchoolNexAPI.Models;
+using SchoolNexAPI.Models.Student;
 
 namespace SchoolNexAPI.Data
 {
@@ -23,6 +24,16 @@ namespace SchoolNexAPI.Data
         public DbSet<StudentEnrollmentModel> StudentEnrollments { get; set; }
         public DbSet<EmployeeModel> Employees { get; set; }
 
+        public DbSet<StudentAddressModel> StudentAddresses { get; set; }
+        public DbSet<StudentParentModel> StudentParents { get; set; }
+        public DbSet<StudentBankDetailsModel> StudentBanks { get; set; }
+        public DbSet<StudentMedicalRecordModel> StudentMedicalRecords { get; set; }
+        public DbSet<StudentPreviousSchoolModel> StudentPreviousSchools { get; set; }
+        public DbSet<StudentTransportationModel> StudentTransportations { get; set; }
+        public DbSet<StudentAdditionalDetailsModel> StudentAdditionalDetails { get; set; }
+        public DbSet<FileRecordsModel> FileRecords { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
@@ -34,8 +45,8 @@ namespace SchoolNexAPI.Data
 
             modelBuilder.ApplyConfiguration(new AcademicYearConfiguration());
             modelBuilder.ApplyConfiguration(new StudentConfigurations());
-            modelBuilder.ApplyConfiguration(new StudentCustomFieldValueConfigurations());
             modelBuilder.ApplyConfiguration(new StudentEnrollmentConfiguration());
+            modelBuilder.ApplyConfiguration(new FileRecordsConfiguration());
 
             base.OnModelCreating(modelBuilder);
 

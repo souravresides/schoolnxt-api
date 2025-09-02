@@ -106,13 +106,12 @@ namespace SchoolNexAPI.Controllers
 
         [Authorize]
         [HttpPost("UploadProfilePicture")]
-        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+        public async Task<IActionResult> UploadProfilePicture(Guid userId, IFormFile photo)
         {
-            if (file == null || file.Length == 0)
+            if (photo == null || photo.Length == 0)
                 return BadRequest("No file uploaded");
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var url = await _administrativeService.UpdateProfilePictureAsync(userId, file);
+            var url = await _administrativeService.UpdateProfilePictureAsync(userId.ToString(), photo);
             return Ok(new { url });
         }
 
