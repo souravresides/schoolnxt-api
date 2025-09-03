@@ -7,7 +7,7 @@ using SchoolNexAPI.Services.Abstract;
 
 namespace SchoolNexAPI.Controllers
 {
-    [Authorize(Roles ="SuperAdmin")]
+    //[Authorize(Roles ="SuperAdmin")]
     [Route("api/[controller]")]
     public class SchoolController : BaseController
     {

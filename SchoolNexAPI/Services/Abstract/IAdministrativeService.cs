@@ -10,7 +10,7 @@ namespace SchoolNexAPI.Services.Abstract
         Task<AuthResponseDto> UpdateUserAsync(string userId, UpdateUserDto model);
         Task<AuthResponseDto> ChangeUserRolesAsync(string userId, List<string> newRoles);
         Task<AuthResponseDto> GetUsersByRoleAsync(string roleName, Guid schoolId);
-        Task<AuthResponseDto> GetAllRolesAsync();
+        Task<AuthResponseDto> GetAllRolesAsync(Guid? schoolId);
         Task<AuthResponseDto> GetUserProfileAsync(string userId);
         Task<AuthResponseDto> UpdateUserProfileAsync(string userId, UpdateUserProfileDto model);
         Task<string> UpdateProfilePictureAsync(string userId, IFormFile file);

@@ -66,7 +66,8 @@ namespace SchoolNexAPI.Controllers
         [HttpGet("roles")]
         public async Task<IActionResult> GetAllRoles()
         {
-            var response = await _administrativeService.GetAllRolesAsync();
+            Guid? schoolId = GetSchoolId();
+            var response = await _administrativeService.GetAllRolesAsync(schoolId);
             if (!response.IsSuccess)
                 return BadRequest(response);
             return Ok(response.Roles);

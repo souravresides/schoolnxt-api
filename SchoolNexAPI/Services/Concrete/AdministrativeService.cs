@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SchoolNexAPI.Data;
 using SchoolNexAPI.DTOs;
 using SchoolNexAPI.DTOs.Administrative;
 using SchoolNexAPI.DTOs.Auth;
@@ -17,34 +18,27 @@ namespace SchoolNexAPI.Services.Concrete
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IAzureService _azureService;
         private readonly UserHelper _userHelper;
+        private readonly AppDbContext _context;
 
         public AdministrativeService(UserManager<AppUserModel> userManager, 
-            RoleManager<IdentityRole> roleManager, IAzureService azureService, UserHelper userHelper)
+            RoleManager<IdentityRole> roleManager, IAzureService azureService, UserHelper userHelper,
+            AppDbContext context)
         {
             _userManager = userManager;
             this._roleManager = roleManager;
             this._azureService = azureService;
             this._userHelper = userHelper;
+            this._context = context;
         }
         public async Task<AuthResponseDto> GetUsersAsync(Guid schoolId)
         {
             try
             {
                 IQueryable<AppUserModel> users = _userManager.Users;
+                IQueryable<SchoolModel> schools = _context.Schools;
 
                 users = users.FilterBySchool(schoolId, _userHelper.IsSuperAdmin());
 
-                //if (!_userHelper.IsSuperAdmin())
-                //{
-                //    if (schoolId != Guid.Empty)
-                //    {
-                //        users = users.Where(s => s.SchoolId == schoolId);
-                //    }
-                //    else
-                //    {
-                //        users = users.Where(s => false); // returns no students
-                //    }
-                //}
                 var userList = new List<UserDto>();
 
                 foreach (var user in users.ToList())
@@ -56,7 +50,8 @@ namespace SchoolNexAPI.Services.Concrete
                         UserId = user.Id,
                         Name = user.Name,
                         Email = user.Email,
-                        Roles = roles.ToList()
+                        Roles = roles.ToList(),
+                        SchoolName = schools.Where(x => x.Id == user.SchoolId).Select(x => x.Name).FirstOrDefault()
                     });
                 }
 
@@ -204,22 +199,37 @@ namespace SchoolNexAPI.Services.Concrete
 
 
 
-        public async Task<AuthResponseDto> GetAllRolesAsync()
+        public async Task<AuthResponseDto> GetAllRolesAsync(Guid? schoolId)
         {
             try
             {
-                var roles = _roleManager.Roles
-                    .Select(r => new RoleDto
+                var roles = _roleManager.Roles.ToList();
+                if (!_userHelper.IsSuperAdmin())
+                {
+                    roles = roles.Where(r => r.Name != "SuperAdmin").ToList();
+                }
+                var roleDtos = new List<RoleDto>();
+
+                foreach (var r in roles)
+                {
+                    var usersInRole = await _userManager.GetUsersInRoleAsync(r.Name);
+                    if (schoolId != null && schoolId != Guid.Empty)
+                    {
+                        usersInRole = usersInRole.Where(x => x.SchoolId == schoolId).ToList();
+                    }
+                    
+                    roleDtos.Add(new RoleDto
                     {
                         Id = r.Id,
-                        Name = r.Name
-                    })
-                    .ToList();
+                        Name = r.Name,
+                        UserCount = usersInRole.Count  // 👈 count users
+                    });
+                }
 
                 return new AuthResponseDto
                 {
                     IsSuccess = true,
-                    Roles = roles
+                    Roles = roleDtos
                 };
             }
             catch (Exception ex)
@@ -231,6 +241,7 @@ namespace SchoolNexAPI.Services.Concrete
                 };
             }
         }
+
 
         public async Task<AuthResponseDto> GetUsersByRoleAsync(string roleName, Guid schoolId)
         {
@@ -269,6 +280,7 @@ namespace SchoolNexAPI.Services.Concrete
         public async Task<AuthResponseDto> GetUserProfileAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
+            var roles =  await _userManager.GetRolesAsync(user);
             if (user == null)
             {
                 return new AuthResponseDto
@@ -284,7 +296,8 @@ namespace SchoolNexAPI.Services.Concrete
                 Email = user.Email,
                 Name = user.Name,
                 PhoneNumber = user.PhoneNumber,
-                ProfilePicture = await _azureService.GetSasUrlAsync(user.ProfilePicture)
+                ProfilePicture = await _azureService.GetSasUrlAsync(user.ProfilePicture),
+                Roles = roles.ToList()
             };
 
             return new AuthResponseDto

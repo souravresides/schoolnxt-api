@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Microsoft.Extensions.Options;
 using SchoolNexAPI.DTOs;
@@ -23,19 +24,20 @@ namespace SchoolNexAPI.Services.Concrete
             var containerClient = _blobServiceClient.GetBlobContainerClient(_options.ContainerName);
             await containerClient.CreateIfNotExistsAsync();
 
-            var blobName = BlobPathBuilder.Build(entity, entityId, category, file.FileName, schoolId);
+            var blobName = BlobPathBuilder.Build(entity, entityId, category, file.FileName, entity != BlobEntity.Platform ? schoolId : null);
 
             var blobClient = containerClient.GetBlobClient(blobName);
 
             await using var stream = file.OpenReadStream();
-            await blobClient.UploadAsync(stream, overwrite: true);
-
+            await blobClient.UploadAsync(stream,
+                new BlobUploadOptions { HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType } },
+                cancellationToken: default);
             return blobName;
         }
 
         public async Task<string> GetSasUrlAsync(string blobName, TimeSpan? validFor = null)
         {
-            if(blobName == null)
+            if (blobName == null)
             {
                 return null;
             }
