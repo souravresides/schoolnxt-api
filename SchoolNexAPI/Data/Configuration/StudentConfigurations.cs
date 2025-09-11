@@ -56,13 +56,21 @@ namespace SchoolNexAPI.Data.Configuration
             builder.HasIndex(s => new { s.SchoolId, s.AcademicYearId, s.IsActive })
                 .HasDatabaseName("IX_Students_SchoolId_Year_IsActive");
 
-            builder.HasIndex(s => s.PhoneNumber)
-                .IsUnique()
-                .HasDatabaseName("IX_Students_PhoneNumber");
+            //builder.HasIndex(s => s.PhoneNumber)
+            //    .IsUnique()
+            //    .HasDatabaseName("IX_Students_PhoneNumber");
 
-            builder.HasIndex(s => s.Email)
-                .IsUnique()
-                .HasDatabaseName("IX_Students_Email");
+            //builder.HasIndex(s => s.Email)
+            //    .IsUnique()
+            //    .HasDatabaseName("IX_Students_Email")
+            //    .HasFilter("[Email] IS NOT NULL");
+
+            builder.Property(s => s.Email)
+                .HasConversion(
+                    v => string.IsNullOrWhiteSpace(v) ? null : v, // to database
+                    v => v                                        // from database
+                );
+
 
             builder.HasIndex(s => new { s.SchoolId, s.CreatedAt })
                 .HasDatabaseName("IX_Students_SchoolId_CreatedAt");

@@ -13,7 +13,7 @@ namespace SchoolNexAPI.Controllers
     {
         private readonly ISchoolService _schoolService;
 
-        public SchoolController(ISchoolService schoolService)
+        public SchoolController(ISchoolService schoolService, ITenantContext tenant, ILogger<SchoolController> logger) : base(tenant, logger)
         {
             _schoolService = schoolService;
         }

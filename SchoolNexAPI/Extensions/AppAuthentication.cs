@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolNexAPI.Data;
@@ -46,6 +47,7 @@ namespace SchoolNexAPI.Extensions
                     ClockSkew = TimeSpan.Zero,
                     NameClaimType = JwtRegisteredClaimNames.Email
                 };
+                x.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
             });
             builder.Services.AddAuthorization();
 

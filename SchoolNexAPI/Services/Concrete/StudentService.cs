@@ -1,19 +1,11 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data;
 using SchoolNexAPI.DTOs;
 using SchoolNexAPI.Enums;
 using SchoolNexAPI.Extensions;
 using SchoolNexAPI.Helpers;
-using SchoolNexAPI.Migrations;
-using SchoolNexAPI.Models;
 using SchoolNexAPI.Models.Student;
 using SchoolNexAPI.Services.Abstract;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static System.Collections.Specialized.BitVector32;
 
 namespace SchoolNexAPI.Services.Concrete
 {
@@ -36,8 +28,8 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 SchoolId = schoolId,
                 FullName = request.FullName,
-                Class = request.Class,
-                Section = request.Section,
+                ClassId = request.ClassId,
+                SectionId = request.SectionId,
                 DateOfBirth = request.DateOfBirth,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
@@ -207,6 +199,8 @@ namespace SchoolNexAPI.Services.Concrete
         public async Task<StudentDto> GetByIdAsync(Guid studentId)
         {
             var student = await _context.Students
+                .Include(s => s.StudentClass)
+                .Include(s => s.ClassSection)
                 .Include(s => s.Parents)
                 .Include(s => s.BankDetails)
                 .Include(s => s.MedicalRecord)
@@ -222,8 +216,10 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 Id = student.Id,
                 FullName = student.FullName,
-                Class = student.Class,
-                Section = student.Section,
+                Class = student.StudentClass.ClassName,
+                ClassId = student.StudentClass.Id,
+                Section = student.ClassSection.SectionName,
+                SectionId = student.ClassSection.Id,
                 DateOfBirth = student.DateOfBirth,
                 Email = student.Email,
                 IsActive = student.IsActive,
@@ -321,6 +317,8 @@ namespace SchoolNexAPI.Services.Concrete
         public async Task<IEnumerable<StudentDto>> GetAllAsync(Guid schoolId, string status = "all")
         {
             IQueryable<StudentModel> query = _context.Students
+                .Include(s => s.StudentClass)
+                .Include(s => s.ClassSection)
                 .Include(s => s.Parents)
                 .Include(s => s.Address)
                 .Include(s => s.BankDetails)
@@ -347,8 +345,8 @@ namespace SchoolNexAPI.Services.Concrete
             {
                 Id = s.Id,
                 FullName = s.FullName,
-                Class = s.Class,
-                Section = s.Section,
+                Class = s.StudentClass.ClassName,
+                Section = s.ClassSection.SectionName,
                 DateOfBirth = s.DateOfBirth,
                 Email = s.Email,
                 PhoneNumber = s.PhoneNumber,
@@ -470,8 +468,8 @@ namespace SchoolNexAPI.Services.Concrete
 
             // Update main student fields
             student.FullName = request.FullName ?? student.FullName;
-            student.Class = request.Class ?? student.Class;
-            student.Section = request.Section ?? student.Section;
+            student.ClassId = request.ClassId ?? student.ClassId;
+            student.SectionId = request.SectionId ?? student.SectionId;
             student.DateOfBirth = request.DateOfBirth ?? student.DateOfBirth;
             student.Email = request.Email ?? student.Email;
             student.PhoneNumber = request.PhoneNumber ?? student.PhoneNumber;
@@ -751,16 +749,9 @@ namespace SchoolNexAPI.Services.Concrete
         public async Task<bool> DeleteAsync(Guid studentId)
         {
             var student = await _context.Students
-                .Include(s => s.CustomFieldValuesList)
                 .FirstOrDefaultAsync(s => s.Id == studentId);
 
             if (student == null) return false;
-
-            // Delete related custom field values
-            if (student.CustomFieldValuesList != null && student.CustomFieldValuesList.Any())
-            {
-                _context.StudentCustomFieldValues.RemoveRange(student.CustomFieldValuesList);
-            }
 
             _context.Students.Remove(student);
             await _context.SaveChangesAsync();
@@ -804,6 +795,70 @@ namespace SchoolNexAPI.Services.Concrete
             }
         }
 
+        public async Task<ClassesSectionsFlatDto> GetAllClassesAndSectionsAsync()
+        {
+            var classOrder = new List<string>
+                {
+                    "Pre Nursery", "Nursery", "Play School", "LKG", "UKG",
+                    "1","2","3","4","5","6","7","8","9","10","11","12"
+                };
+
+            var classes = await _context.Class
+                .Select(c => new ClassDto
+                {
+                    Id = c.Id,
+                    ClassName = c.ClassName
+                })
+                .ToListAsync();
+            classes = classes
+                .OrderBy(c => classOrder.IndexOf(c.ClassName))
+                .ToList();
+
+
+            var sections = await _context.ClassSection
+                .Select(s => new SectionDto
+                {
+                    Id = s.Id,
+                    SectionName = s.SectionName
+                }).OrderBy(x => x.SectionName)
+                .ToListAsync();
+
+            return new ClassesSectionsFlatDto
+            {
+                Classes = classes,
+                Sections = sections
+            };
+        }
+
+        public async Task<StudentModel> ToggleActiveStatusAsync(Guid id)
+        {
+            var student = await _context.Students.FindAsync(id);
+            if (student == null)
+                throw new Exception("Student not found");
+
+            student.IsActive = !student.IsActive;
+            await _context.SaveChangesAsync();
+            return student;
+        }
 
     }
+    public class ClassesSectionsFlatDto
+    {
+        public List<ClassDto> Classes { get; set; }
+        public List<SectionDto> Sections { get; set; }
+    }
+
+    public class ClassDto
+    {
+        public Guid Id { get; set; }
+        public string ClassName { get; set; }
+    }
+
+    public class SectionDto
+    {
+        public Guid Id { get; set; }
+        public string SectionName { get; set; }
+    }
+
+
 }

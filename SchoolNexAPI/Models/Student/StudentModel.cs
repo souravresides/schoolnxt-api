@@ -8,8 +8,10 @@ namespace SchoolNexAPI.Models.Student
         public Guid Id { get; set; }
 
         [Required] public string FullName { get; set; }
-        [Required] public string Class { get; set; }
-        public string? Section { get; set; }
+        [Required] public Guid ClassId { get; set; }
+        public StudentClassModel StudentClass { get; set; }
+        [Required]public Guid SectionId { get; set; }
+        public ClassSectionModel ClassSection { get; set; }
         [Required] public DateTime DateOfBirth { get; set; }
         public string? Email { get; set; }
         [Required] public string PhoneNumber { get; set; }
@@ -37,9 +39,6 @@ namespace SchoolNexAPI.Models.Student
         public StudentTransportationModel Transportation { get; set; }
         public StudentAdditionalDetailsModel AdditionalDetails { get; set; }
 
-
-        // Relationships
-        public List<StudentCustomFieldValueModel> CustomFieldValuesList { get; set; }
         public ICollection<StudentEnrollmentModel> Enrollments { get; set; }
     }
 }

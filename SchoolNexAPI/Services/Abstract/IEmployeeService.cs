@@ -1,14 +1,17 @@
-﻿using SchoolNexAPI.DTOs.Employee;
+﻿using SchoolNexAPI.DTOs;
+using SchoolNexAPI.DTOs.Employee;
+using SchoolNexAPI.Migrations;
+using SchoolNexAPI.Models;
 
 namespace SchoolNexAPI.Services.Abstract
 {
     public interface IEmployeeService
     {
-        Task<EmployeeDto> CreateAsync(CreateEmployeeDto dto, Guid schoolId, string createdBy);
-        Task<EmployeeDto> UpdateAsync(Guid id, UpdateEmployeeDto dto, Guid schoolId, string updatedBy);
-        Task<EmployeeDto> GetByIdAsync(Guid id, Guid schoolId);
-        Task<List<EmployeeDto>> GetAllAsync(Guid schoolId);
-        Task<bool> DeleteAsync(Guid id, Guid schoolId, string deletedBy);
+        Task<EmployeeModel> CreateStaffAsync(EmployeeDto staffDto,Guid? SchoolId);
+        Task<EmployeeModel?> GetStaffByIdAsync(Guid id, Guid? SchoolId);
+        Task<List<EmployeeModel>> GetAllStaffAsync(Guid? SchoolId);
+        Task<EmployeeModel?> UpdateStaffAsync(Guid id, EmployeeDto staffDto, Guid? SchoolId);
+        Task<bool> DeleteStaffAsync(Guid id, Guid? SchoolId);
     }
 
 }

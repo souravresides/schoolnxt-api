@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SchoolNexAPI.DTOs;
 using SchoolNexAPI.DTOs.Employee;
 using SchoolNexAPI.Services.Abstract;
 
@@ -11,55 +12,47 @@ namespace SchoolNexAPI.Controllers
     {
         private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, ITenantContext tenant, ILogger<EmployeeController> logger) : base(tenant, logger)
         {
             _employeeService = employeeService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateEmployeeDto dto)
+        public async Task<IActionResult> CreateStaff([FromBody] EmployeeDto dto)
         {
-            var schoolId = GetSchoolId();
-            var createdBy = User.Identity?.Name ?? "system";
-
-            var result = await _employeeService.CreateAsync(dto, schoolId, createdBy);
-            return Ok(result);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var schoolId = GetSchoolId();
-            var employees = await _employeeService.GetAllAsync(schoolId);
-            return Ok(employees);
+            var staff = await _employeeService.CreateStaffAsync(dto, GetSchoolId());
+            return Ok(staff);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetStaff(Guid id)
         {
-            var schoolId = GetSchoolId();
-            var employee = await _employeeService.GetByIdAsync(id, schoolId);
-            return employee == null ? NotFound() : Ok(employee);
+            var staff = await _employeeService.GetStaffByIdAsync(id, GetSchoolId());
+            if (staff == null) return NotFound();
+            return Ok(staff);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllStaff()
+        {
+            var staffList = await _employeeService.GetAllStaffAsync(GetSchoolId());
+            return Ok(staffList);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEmployeeDto dto)
+        public async Task<IActionResult> UpdateStaff(Guid id,[FromBody] EmployeeDto dto)
         {
-            var schoolId = GetSchoolId();
-            var updatedBy = User.Identity?.Name ?? "system";
-
-            var result = await _employeeService.UpdateAsync(id, dto, schoolId, updatedBy);
-            return result == null ? NotFound() : Ok(result);
+            var staff = await _employeeService.UpdateStaffAsync(id, dto, GetSchoolId());
+            if (staff == null) return NotFound();
+            return Ok(staff);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteStaff(Guid id)
         {
-            var schoolId = GetSchoolId();
-            var deletedBy = User.Identity?.Name ?? "system";
-
-            var success = await _employeeService.DeleteAsync(id, schoolId, deletedBy);
-            return success ? Ok() : NotFound();
+            var deleted = await _employeeService.DeleteStaffAsync(id, GetSchoolId());
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }

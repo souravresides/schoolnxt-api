@@ -10,12 +10,10 @@ namespace SchoolNexAPI.Controllers
     public class StudentController : BaseController
     {
         private readonly IStudentService _studentService;
-        private readonly ILogger<StudentController> _logger;
 
-        public StudentController(IStudentService studentService, ILogger<StudentController> logger)
+        public StudentController(IStudentService studentService, ITenantContext tenant, ILogger<PaymentsController> logger) : base(tenant, logger)
         {
             _studentService = studentService;
-            _logger = logger;
         }
 
         [HttpGet("getall")]
@@ -73,6 +71,27 @@ namespace SchoolNexAPI.Controllers
                 : StatusCode(500, "Error uploading photo");
         }
 
+        [HttpGet("classes-sections")]
+        public async Task<IActionResult> GetClassesAndSections()
+        {
+            var schoolId = GetSchoolId(); 
+            var classSectionList = await _studentService.GetAllClassesAndSectionsAsync();
+
+            return classSectionList != null
+                ? Ok(new { Message = "Classes and sections fetched successfully", Data = classSectionList })
+                : NotFound(new { Message = "No classes or sections found" });
+        }
+
+        [HttpPost("toggle-active/{id}")]
+        public async Task<IActionResult> ToggleActive(Guid id)
+        {
+            var student = await _studentService.ToggleActiveStatusAsync(id);
+            return Ok(new
+            {
+                Message = student.IsActive ? "Student activated successfully" : "Student deactivated successfully",
+                Data = new { student.Id, student.IsActive }
+            });
+        }
 
     }
 }

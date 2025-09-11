@@ -3,10 +3,10 @@
     public class CreateStudentRequest
     {
         public string FullName { get; set; }
-        public string Class { get; set; }
-        public string? Section { get; set; }
+        public Guid ClassId { get; set; }
+        public Guid SectionId { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Gender { get; set; }
         public Guid AcademicYearId { get; set; }

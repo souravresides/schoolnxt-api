@@ -12,7 +12,7 @@ namespace SchoolNexAPI.Controllers
     {
         private readonly IFileService _fileService;
 
-        public FilesController(IFileService fileService)
+        public FilesController(IFileService fileService, ITenantContext tenant, ILogger<FilesController> logger) : base(tenant, logger)
         {
             this._fileService = fileService;
         }

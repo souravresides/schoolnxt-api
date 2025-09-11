@@ -17,7 +17,7 @@ namespace SchoolNexAPI.Controllers
         private readonly IAdministrativeService _administrativeService;
         private readonly UserManager<AppUserModel> _userManager;
 
-        public AdministrativeController(IAdministrativeService administrativeService, UserManager<AppUserModel> userManager)
+        public AdministrativeController(IAdministrativeService administrativeService, UserManager<AppUserModel> userManager, ITenantContext tenant, ILogger<AdministrativeController> logger) : base(tenant, logger)
         {
             this._administrativeService = administrativeService;
             this._userManager = userManager;

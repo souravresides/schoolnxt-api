@@ -60,7 +60,7 @@ namespace SchoolNexAPI.Services.Concrete
                 return new AuthResponseDto { IsSuccess = false, Errors = errors };
             }
 
-            await _userManager.AddToRoleAsync(user, model.Role); // Assign role during registration
+            await _userManager.AddToRoleAsync(user, model.Role);
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
@@ -85,38 +85,38 @@ namespace SchoolNexAPI.Services.Concrete
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
-            // Generate Refresh Token
-            var refreshToken = GenerateRefreshToken();
+            //// Generate Refresh Token
+            //var refreshToken = GenerateRefreshToken();
 
-            // Save refresh token in DB
-            var refreshTokenEntity = new RefreshTokenModel
-            {
-                Token = refreshToken,
-                Expires = DateTime.UtcNow.AddDays(30),
-                Created = DateTime.UtcNow,
-                UserId = user.Id
-            };
-            _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(30)
-            });
-            await _refreshTokenRepository.AddAsync(refreshTokenEntity);
+            //// Save refresh token in DB
+            //var refreshTokenEntity = new RefreshTokenModel
+            //{
+            //    Token = refreshToken,
+            //    Expires = DateTime.UtcNow.AddDays(30),
+            //    Created = DateTime.UtcNow,
+            //    UserId = user.Id
+            //};
+            //_httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            //{
+            //    HttpOnly = true,
+            //    Secure = true,
+            //    SameSite = SameSiteMode.None,
+            //    Expires = DateTime.UtcNow.AddDays(30)
+            //});
+            //await _refreshTokenRepository.AddAsync(refreshTokenEntity);
 
             return new AuthResponseDto
             {
                 IsSuccess = true,
                 Token = token,
-                User = new UserDto
-                {
-                    UserId = user.Id,
-                    Email = user.Email,
-                    Name = user.Name,
-                    Roles = roles.ToList(),
-                    ProfilePicture = await _azureService.GetSasUrlAsync(user.ProfilePicture)
-                },
+                //User = new UserDto
+                //{
+                //    UserId = user.Id,
+                //    Email = user.Email,
+                //    Name = user.Name,
+                //    Roles = roles.ToList(),
+                //    ProfilePicture = await _azureService.GetSasUrlAsync(user.ProfilePicture)
+                //},
             };
         }
 

@@ -33,6 +33,7 @@ namespace SchoolNexAPI.Models
         public SchoolSubscriptionModel SchoolSubscription { get; set; }
         public SchoolSettingsModel SchoolSettings { get; set; }
         public List<StudentModel> Students { get; set; }
+        public List<EmployeeModel> Employees { get; set; }
         public List<FileRecordsModel> FileRecords { get; set; }
         public ICollection<AcademicYearModel> AcademicYears { get; set; }
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data;
-using SchoolNexAPI.DTOs;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
 
@@ -15,64 +14,100 @@ namespace SchoolNexAPI.Services.Concrete
             _context = context;
         }
 
-        public async Task<IEnumerable<AcademicYearModel>> GetAllAsync()
+        public async Task<AcademicYearModel> CreateAsync(Guid schoolId, string name, DateTime start, DateTime end, string userId)
         {
-            return await _context.AcademicYears.Include(a => a.School).ToListAsync();
-        }
+            if (start >= end)
+                throw new InvalidOperationException("Start date must be before end date.");
 
-        public async Task<AcademicYearModel> GetByIdAsync(Guid id)
-        {
-            return await _context.AcademicYears.Include(a => a.School)
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
+            // Prevent duplicate names or overlapping date ranges
+            var exists = await _context.AcademicYears
+                .AnyAsync(x => x.SchoolId == schoolId &&
+                    (x.Name == name || (start <= x.EndDate && end >= x.StartDate)));
 
-        public async Task<AcademicYearModel> CreateAsync(Guid SchoolId,string createdBy,CreateAcademicYearDto dto)
-        {
-            var yearName = $"{dto.StartDate.Year}-{dto.EndDate.Year}";
+            if (exists)
+                throw new InvalidOperationException("Academic Year already exists or overlaps with an existing one.");
 
-            var model = new AcademicYearModel
+            var ay = new AcademicYearModel
             {
                 Id = Guid.NewGuid(),
-                SchoolId = SchoolId,
-                YearName = yearName,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                IsCurrent = dto.IsCurrent,
-                IsLocked = dto.IsLocked,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = createdBy
+                SchoolId = schoolId,
+                Name = name,
+                StartDate = start,
+                EndDate = end,
+                Status = AcademicYearStatus.Draft,
+                CreatedBy = userId,
+                CreatedAt = DateTime.UtcNow
             };
 
-            _context.AcademicYears.Add(model);
+            _context.AcademicYears.Add(ay);
             await _context.SaveChangesAsync();
-            return model;
+            return ay;
         }
 
-
-        public async Task<AcademicYearModel> UpdateAsync(Guid id, Guid SchoolId,string updatedBy, CreateAcademicYearDto dto)
+        public async Task<AcademicYearModel> ActivateAsync(Guid schoolId, Guid ayId, string userId)
         {
-            var existing = await _context.AcademicYears.FindAsync(id);
-            if (existing == null) return null;
+            var ay = await _context.AcademicYears.FirstOrDefaultAsync(x => x.Id == ayId && x.SchoolId == schoolId);
+            if (ay == null) throw new InvalidOperationException("Academic Year not found.");
 
-            existing.YearName = $"{dto.StartDate.Year}-{dto.EndDate.Year}";
-            existing.StartDate = dto.StartDate;
-            existing.EndDate = dto.EndDate;
-            existing.IsCurrent = dto.IsCurrent;
-            existing.IsLocked = dto.IsLocked;
-            existing.UpdatedAt = DateTime.UtcNow;
-            existing.UpdatedBy = updatedBy;
+            if (ay.Status == AcademicYearStatus.Closed || ay.Status == AcademicYearStatus.Archived)
+                throw new InvalidOperationException("Cannot activate a closed or archived academic year.");
+
+            if (DateTime.UtcNow < ay.StartDate || DateTime.UtcNow > ay.EndDate)
+                throw new InvalidOperationException("Cannot activate academic year outside its valid date range.");
+
+            // deactivate others
+            var others = _context.AcademicYears.Where(x => x.SchoolId == schoolId && x.Id != ayId && x.IsCurrent);
+            foreach (var o in others)
+            {
+                o.IsCurrent = false;
+                o.Status = AcademicYearStatus.Closed; // optional: auto-close old active years
+                o.UpdatedAt = DateTime.UtcNow;
+                o.UpdatedBy = userId;
+            }
+
+            ay.Status = AcademicYearStatus.Active;
+            ay.IsCurrent = true;
+            ay.UpdatedBy = userId;
+            ay.UpdatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
-            return existing;
+            return ay;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<AcademicYearModel> CloseAsync(Guid schoolId, Guid ayId, string userId)
         {
-            var model = await _context.AcademicYears.FindAsync(id);
-            if (model == null) return false;
+            var ay = await _context.AcademicYears.FirstOrDefaultAsync(x => x.Id == ayId && x.SchoolId == schoolId);
+            if (ay == null) throw new InvalidOperationException("Academic Year not found.");
 
-            _context.AcademicYears.Remove(model);
+            if (ay.Status != AcademicYearStatus.Active)
+                throw new InvalidOperationException("Only active academic years can be closed.");
+
+            if (DateTime.UtcNow < ay.EndDate)
+                throw new InvalidOperationException("Cannot close an academic year before its end date.");
+
+            ay.Status = AcademicYearStatus.Closed;
+            ay.IsCurrent = false;
+            ay.FinanceLockedAt = DateTime.UtcNow;
+            ay.UpdatedBy = userId;
+            ay.UpdatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
-            return true;
+            return ay;
         }
+
+        public Task<List<AcademicYearModel>> GetAllAsync(Guid schoolId) =>
+            _context.AcademicYears
+                .Where(x => x.SchoolId == schoolId)
+                .OrderByDescending(x => x.StartDate)
+                .ToListAsync();
+
+        public async Task<AcademicYearModel?> GetCurrentAsync(Guid schoolId)
+        {
+            return await _context.AcademicYears
+                .Where(x => x.SchoolId == schoolId && x.IsCurrent && x.Status == AcademicYearStatus.Active)
+                .OrderByDescending(x => x.StartDate)
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

@@ -203,11 +203,15 @@ namespace SchoolNexAPI.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("FinanceLockedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsLocked")
-                        .HasColumnType("bit");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("SchoolId")
                         .HasColumnType("uniqueidentifier");
@@ -215,16 +219,14 @@ namespace SchoolNexAPI.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("YearName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -317,6 +319,73 @@ namespace SchoolNexAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolNexAPI.Models.ClassSectionModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SectionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassSection");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d14f1f3e-1c2a-4f8e-9b3f-1a2b3c4d5e6f"),
+                            SectionName = "A"
+                        },
+                        new
+                        {
+                            Id = new Guid("e25f2f4e-2d3b-4f9f-0c4d-2b3c4d5e6f70"),
+                            SectionName = "B"
+                        },
+                        new
+                        {
+                            Id = new Guid("f36f3f5f-3e4c-4f0f-1d5e-3c4d5e6f7a81"),
+                            SectionName = "C"
+                        },
+                        new
+                        {
+                            Id = new Guid("a47f4f6f-4f5d-7f1f-2e6f-4d5e6f7b9c12"),
+                            SectionName = "D"
+                        },
+                        new
+                        {
+                            Id = new Guid("b58f5f7f-5f6e-8f2f-3f7f-5e6f7c8d9e34"),
+                            SectionName = "E"
+                        },
+                        new
+                        {
+                            Id = new Guid("c69f6f8f-6f7f-9f3f-4f8f-6f7d8e9f0a56"),
+                            SectionName = "F"
+                        },
+                        new
+                        {
+                            Id = new Guid("d70f7f9f-7f8f-0f4f-5f9f-7f8e9a0b1c78"),
+                            SectionName = "G"
+                        },
+                        new
+                        {
+                            Id = new Guid("e81f8f0f-8f9f-1f5f-6f0f-8f9a0b1c2d90"),
+                            SectionName = "H"
+                        },
+                        new
+                        {
+                            Id = new Guid("f92f9f1f-9f0f-2f6f-7f1f-9f0b1c2d3e12"),
+                            SectionName = "I"
+                        },
+                        new
+                        {
+                            Id = new Guid("a03f0f2f-0f1f-3f7f-8f2f-0f1c2d3e4f34"),
+                            SectionName = "J"
+                        });
+                });
+
             modelBuilder.Entity("SchoolNexAPI.Models.CustomFieldDefinitionModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -378,7 +447,294 @@ namespace SchoolNexAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ContactNumber")
+                    b.Property<string>("AadharNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AccountHolderName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("AppointmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BankAccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BloodGroup")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentAddressLine1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentAddressLine2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentCity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentCountry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentPinCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentState")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Designation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ESICodeNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("EmergencyContactNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("EmploymentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ExperienceYears")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FatherName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HighestQualification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IFSCCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MaritalStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MiddleName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MobileNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("MotherName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PANNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PFAccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermanentAddressLine1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermanentAddressLine2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermanentCity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermanentCountry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermanentPinCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermanentState")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Religion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reportee")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReportingManager")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SpouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UAN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Department");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.HasIndex("MobileNumber");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("UserRole");
+
+                    b.HasIndex("FirstName", "LastName");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.EmployeePreviousEmployment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("JoiningDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RelievingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("StaffId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("EmployeePreviousEmployment");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.Adjustment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("InvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Adjustments");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.FeeHead", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FeeHeads");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.FeeStructure", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BillingCycle")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClassName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -389,21 +745,276 @@ namespace SchoolNexAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Section")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("JoiningDate")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FeeStructures");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.FeeStructureItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("FeeHeadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FeeStructureId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeeStructureId");
+
+                    b.ToTable("FeeStructureItems");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.Invoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("AmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("TotalAdjustments")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalLateFee")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalTax")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId", "AcademicYearId", "InvoiceNumber")
+                        .IsUnique();
+
+                    b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.InvoiceLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("FeeHeadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceLines");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.InvoiceSequence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("NextNumber")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InvoiceSequences");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId", "IdempotencyKey")
+                        .IsUnique();
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.PaymentAllocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("PaymentAllocations");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.StudentFeePlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AcademicYearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("FeeStructureId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -414,7 +1025,37 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees");
+                    b.HasIndex("SchoolId", "StudentId", "AcademicYearId")
+                        .IsUnique();
+
+                    b.ToTable("StudentFeePlans");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.StudentFeePlanLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Discount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("FeeHeadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StudentFeePlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentFeePlanId");
+
+                    b.ToTable("StudentFeePlanLines");
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.FileRecordsModel", b =>
@@ -488,6 +1129,94 @@ namespace SchoolNexAPI.Migrations
                     b.ToTable("FileRecords");
                 });
 
+            modelBuilder.Entity("SchoolNexAPI.Models.PaymentMethodModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MethodName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentMethod");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            MethodName = "Cash",
+                            Value = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MethodName = "Cheque",
+                            Value = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MethodName = "BankTransfer",
+                            Value = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            MethodName = "Online",
+                            Value = 3
+                        });
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.PaymentStatusModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentStatus");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            StatusName = "Pending",
+                            Value = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
+                            StatusName = "Confirmed",
+                            Value = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            StatusName = "Failed",
+                            Value = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
+                            StatusName = "Refunded",
+                            Value = 3
+                        });
+                });
+
             modelBuilder.Entity("SchoolNexAPI.Models.PaymentTransactionModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -495,6 +1224,7 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -912,9 +1642,8 @@ namespace SchoolNexAPI.Migrations
                     b.Property<Guid>("AcademicYearId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Class")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -927,7 +1656,7 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -942,7 +1671,7 @@ namespace SchoolNexAPI.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoPath")
                         .HasColumnType("nvarchar(max)");
@@ -950,8 +1679,8 @@ namespace SchoolNexAPI.Migrations
                     b.Property<Guid>("SchoolId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Section")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("SectionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -961,17 +1690,12 @@ namespace SchoolNexAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Students_Email")
-                        .HasFilter("[Email] IS NOT NULL");
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("FullName")
                         .HasDatabaseName("IX_Students_FullName");
 
-                    b.HasIndex("PhoneNumber")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Students_PhoneNumber");
+                    b.HasIndex("SectionId");
 
                     b.HasIndex("SchoolId", "CreatedAt")
                         .HasDatabaseName("IX_Students_SchoolId_CreatedAt");
@@ -1101,6 +1825,108 @@ namespace SchoolNexAPI.Migrations
                     b.ToTable("StudentTransportations");
                 });
 
+            modelBuilder.Entity("SchoolNexAPI.Models.StudentClassModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Class");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("3f2504e0-4f89-11d3-9a0c-0305e82c3301"),
+                            ClassName = "Play School"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f9619ff-8b86-d011-b42d-00cf4fc964ff"),
+                            ClassName = "Pre Nursery"
+                        },
+                        new
+                        {
+                            Id = new Guid("7c9e6679-7425-40de-944b-e07fc1f90ae7"),
+                            ClassName = "Nursery"
+                        },
+                        new
+                        {
+                            Id = new Guid("21ec2020-3aea-4069-a2dd-08002b30309d"),
+                            ClassName = "LKG"
+                        },
+                        new
+                        {
+                            Id = new Guid("0f8fad5b-d9cb-469f-a165-70867728950e"),
+                            ClassName = "UKG"
+                        },
+                        new
+                        {
+                            Id = new Guid("9a0b1234-5678-4def-9012-abcdef123456"),
+                            ClassName = "1"
+                        },
+                        new
+                        {
+                            Id = new Guid("123e4567-e89b-12d3-a456-426614174000"),
+                            ClassName = "2"
+                        },
+                        new
+                        {
+                            Id = new Guid("c56a4180-65aa-42ec-a945-5fd21dec0538"),
+                            ClassName = "3"
+                        },
+                        new
+                        {
+                            Id = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            ClassName = "4"
+                        },
+                        new
+                        {
+                            Id = new Guid("e02fd0e4-00fd-090a-ca30-0d00a0038ba0"),
+                            ClassName = "5"
+                        },
+                        new
+                        {
+                            Id = new Guid("5a1a0c0a-44f8-4c8a-9b2d-8a4e6f0d1234"),
+                            ClassName = "6"
+                        },
+                        new
+                        {
+                            Id = new Guid("a8098c1a-f86e-11da-bd1a-00112444be1e"),
+                            ClassName = "7"
+                        },
+                        new
+                        {
+                            Id = new Guid("6fa459ea-ee8a-3ca4-894e-db77e160355e"),
+                            ClassName = "8"
+                        },
+                        new
+                        {
+                            Id = new Guid("16fd2706-8baf-433b-82eb-8c7fada847da"),
+                            ClassName = "9"
+                        },
+                        new
+                        {
+                            Id = new Guid("886313e1-3b8a-5372-9b90-0c9aee199e5d"),
+                            ClassName = "10"
+                        },
+                        new
+                        {
+                            Id = new Guid("4f5b5b6c-29c2-4a93-b0ef-0c1c9f1e5d4c"),
+                            ClassName = "11"
+                        },
+                        new
+                        {
+                            Id = new Guid("12345678-1234-1234-1234-123456789abc"),
+                            ClassName = "12"
+                        });
+                });
+
             modelBuilder.Entity("SchoolNexAPI.Models.StudentCustomFieldValueModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1220,6 +2046,7 @@ namespace SchoolNexAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PricePerMonth")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -1287,6 +2114,64 @@ namespace SchoolNexAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("School");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.EmployeeModel", b =>
+                {
+                    b.HasOne("SchoolNexAPI.Models.SchoolModel", "School")
+                        .WithMany("Employees")
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("School");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.EmployeePreviousEmployment", b =>
+                {
+                    b.HasOne("SchoolNexAPI.Models.EmployeeModel", "Staff")
+                        .WithMany("PreviousEmployments")
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.FeeStructureItem", b =>
+                {
+                    b.HasOne("SchoolNexAPI.Models.Fees.FeeStructure", null)
+                        .WithMany("Items")
+                        .HasForeignKey("FeeStructureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.InvoiceLine", b =>
+                {
+                    b.HasOne("SchoolNexAPI.Models.Fees.Invoice", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.PaymentAllocation", b =>
+                {
+                    b.HasOne("SchoolNexAPI.Models.Fees.Payment", null)
+                        .WithMany("Allocations")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.StudentFeePlanLine", b =>
+                {
+                    b.HasOne("SchoolNexAPI.Models.Fees.StudentFeePlan", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("StudentFeePlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.FileRecordsModel", b =>
@@ -1386,13 +2271,29 @@ namespace SchoolNexAPI.Migrations
 
             modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentModel", b =>
                 {
+                    b.HasOne("SchoolNexAPI.Models.StudentClassModel", "StudentClass")
+                        .WithMany("Students")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("SchoolNexAPI.Models.SchoolModel", "School")
                         .WithMany("Students")
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SchoolNexAPI.Models.ClassSectionModel", "ClassSection")
+                        .WithMany("Students")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClassSection");
+
                     b.Navigation("School");
+
+                    b.Navigation("StudentClass");
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.Student.StudentParentModel", b =>
@@ -1443,7 +2344,7 @@ namespace SchoolNexAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("SchoolNexAPI.Models.Student.StudentModel", "Student")
-                        .WithMany("CustomFieldValuesList")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1479,9 +2380,41 @@ namespace SchoolNexAPI.Migrations
                     b.Navigation("Enrollments");
                 });
 
+            modelBuilder.Entity("SchoolNexAPI.Models.ClassSectionModel", b =>
+                {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.EmployeeModel", b =>
+                {
+                    b.Navigation("PreviousEmployments");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.FeeStructure", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.Invoice", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.Payment", b =>
+                {
+                    b.Navigation("Allocations");
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.Fees.StudentFeePlan", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
             modelBuilder.Entity("SchoolNexAPI.Models.SchoolModel", b =>
                 {
                     b.Navigation("AcademicYears");
+
+                    b.Navigation("Employees");
 
                     b.Navigation("FileRecords");
 
@@ -1505,8 +2438,6 @@ namespace SchoolNexAPI.Migrations
                     b.Navigation("BankDetails")
                         .IsRequired();
 
-                    b.Navigation("CustomFieldValuesList");
-
                     b.Navigation("Enrollments");
 
                     b.Navigation("MedicalRecord")
@@ -1519,6 +2450,11 @@ namespace SchoolNexAPI.Migrations
 
                     b.Navigation("Transportation")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolNexAPI.Models.StudentClassModel", b =>
+                {
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("SchoolNexAPI.Models.SubscriptionTypeModel", b =>

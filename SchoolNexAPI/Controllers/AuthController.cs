@@ -14,7 +14,7 @@ namespace SchoolNexAPI.Controllers
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ITenantContext tenant, ILogger<AuthController> logger) : base(tenant, logger)
         {
             _authService = authService;
         }
@@ -22,6 +22,11 @@ namespace SchoolNexAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
         {
+            if (!User.IsInRole("SuperAdmin"))
+            {
+                model.SchoolId = GetSchoolIdFromClaims();
+            }
+
             var response = await _authService.RegisterAsync(model);
             if (!response.IsSuccess)
                 return BadRequest(response);

@@ -2,18 +2,17 @@
 
 namespace SchoolNexAPI.Models
 {
+    public enum AcademicYearStatus { Draft = 0, Active = 1, Closed = 2, Archived = 3 }
     public class AcademicYearModel
     {
-        [Key]
-        public Guid Id { get; set; }
+        [Key] public Guid Id { get; set; }
         public Guid SchoolId { get; set; }
-
-        public string YearName { get; set; }     // e.g., "2024-2025"
+        public string Name { get; set; } // "2025-26"
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-
+        public AcademicYearStatus Status { get; set; } = AcademicYearStatus.Draft;
         public bool IsCurrent { get; set; } = false;
-        public bool IsLocked { get; set; } = false;
+        public DateTime? FinanceLockedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; }

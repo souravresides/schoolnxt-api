@@ -6,7 +6,9 @@
 
         public string FullName { get; set; }
         public string Class { get; set; }
+        public Guid ClassId { get; set; }
         public string Section { get; set; }
+        public Guid SectionId { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }

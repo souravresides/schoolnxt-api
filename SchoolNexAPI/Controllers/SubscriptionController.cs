@@ -12,7 +12,7 @@ namespace SchoolNexAPI.Controllers
     {
         private readonly ISubscriptionService _subscriptionService;
 
-        public SubscriptionController(ISubscriptionService subscriptionService)
+        public SubscriptionController(ISubscriptionService subscriptionService, ITenantContext tenant, ILogger<SubscriptionController> logger) : base(tenant, logger)
         {
             _subscriptionService = subscriptionService;
         }

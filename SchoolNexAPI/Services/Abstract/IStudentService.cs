@@ -1,4 +1,6 @@
 ﻿using SchoolNexAPI.DTOs;
+using SchoolNexAPI.Models.Student;
+using SchoolNexAPI.Services.Concrete;
 
 namespace SchoolNexAPI.Services.Abstract
 {
@@ -10,5 +12,7 @@ namespace SchoolNexAPI.Services.Abstract
         Task<bool> UpdateAsync(Guid studentId, Guid schoolId, UpdateStudentRequest request, string updatedBy);
         Task<bool> DeleteAsync(Guid studentId);
         Task<string?> UploadPhotoAsync(Guid studentId, Guid schoolId, IFormFile photo, string updatedBy);
+        Task<ClassesSectionsFlatDto> GetAllClassesAndSectionsAsync();
+        Task<StudentModel> ToggleActiveStatusAsync(Guid id);
     }
 }

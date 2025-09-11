@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SchoolNexAPI.Data;
+using SchoolNexAPI.DTOs;
 using SchoolNexAPI.DTOs.Employee;
 using SchoolNexAPI.Models;
 using SchoolNexAPI.Services.Abstract;
@@ -10,76 +11,175 @@ namespace SchoolNexAPI.Services.Concrete
     public class EmployeeService : IEmployeeService
     {
         private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
 
-        public EmployeeService(AppDbContext context, IMapper mapper)
+        public EmployeeService(AppDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task<EmployeeDto> CreateAsync(CreateEmployeeDto dto, Guid schoolId, string createdBy)
+        public async Task<EmployeeModel> CreateStaffAsync(EmployeeDto staffDto, Guid? SchoolId)
         {
-            var employee = new EmployeeModel
+            var staff = new EmployeeModel
             {
-                Id = Guid.NewGuid(),
-                FullName = dto.FullName,
-                Email = dto.Email,
-                ContactNumber = dto.ContactNumber,
-                JoiningDate = dto.JoiningDate,
-                SchoolId = schoolId,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = createdBy,
-                IsActive = true
+                EmployeeId = GenerateEmployeeId(),
+                SchoolId = SchoolId ?? Guid.Empty,
+                MobileNumber = staffDto.MobileNumber,
+                Email = staffDto.Email,
+                FirstName = staffDto.FirstName,
+                MiddleName = staffDto.MiddleName,
+                LastName = staffDto.LastName,
+                DateOfBirth = staffDto.DateOfBirth,
+                Gender = staffDto.Gender,
+                BloodGroup = staffDto.BloodGroup,
+                UserRole = staffDto.UserRole,
+                Department = staffDto.Department,
+                CurrentAddressLine1 = staffDto.CurrentAddressLine1,
+                CurrentAddressLine2 = staffDto.CurrentAddressLine2,
+                CurrentCity = staffDto.CurrentCity,
+                CurrentState = staffDto.CurrentState,
+                CurrentPinCode = staffDto.CurrentPinCode,
+                CurrentCountry = staffDto.CurrentCountry,
+                PermanentAddressLine1 = staffDto.PermanentAddressLine1,
+                PermanentAddressLine2 = staffDto.PermanentAddressLine2,
+                PermanentCity = staffDto.PermanentCity,
+                PermanentState = staffDto.PermanentState,
+                PermanentPinCode = staffDto.PermanentPinCode,
+                PermanentCountry = staffDto.PermanentCountry,
+                JobTitle = staffDto.JobTitle,
+                Designation = staffDto.Designation,
+                EmploymentType = staffDto.EmploymentType,
+                AppointmentDate = staffDto.AppointmentDate,
+                ExperienceYears = staffDto.ExperienceYears,
+                HighestQualification = staffDto.HighestQualification,
+                UAN = staffDto.UAN,
+                PFAccountNumber = staffDto.PFAccountNumber,
+                ESICodeNumber = staffDto.ESICodeNumber,
+                ReportingManager = staffDto.ReportingManager,
+                Reportee = staffDto.Reportee,
+                AadharNumber = staffDto.AadharNumber,
+                PANNumber = staffDto.PANNumber,
+                Religion = staffDto.Religion,
+                Category = staffDto.Category,
+                FatherName = staffDto.FatherName,
+                MotherName = staffDto.MotherName,
+                MaritalStatus = staffDto.MaritalStatus,
+                SpouseName = staffDto.SpouseName,
+                EmergencyContactNumber = staffDto.EmergencyContactNumber,
+                BankName = staffDto.BankName,
+                BankAccountNumber = staffDto.BankAccountNumber,
+                IFSCCode = staffDto.IFSCCode,
+                AccountHolderName = staffDto.AccountHolderName,
+                ProfilePhotoUrl = staffDto.ProfilePhotoUrl
             };
 
-            _context.Employees.Add(employee);
+            if (staffDto.PreviousEmployments != null)
+            {
+                foreach (var prev in staffDto.PreviousEmployments)
+                {
+                    staff.PreviousEmployments.Add(new EmployeePreviousEmployment
+                    {
+                        CompanyName = prev.CompanyName,
+                        JobTitle = prev.JobTitle,
+                        JoiningDate = prev.JoiningDate,
+                        RelievingDate = prev.RelievingDate,
+                        Location = prev.Location,
+                        ReferenceName = prev.ReferenceName,
+                        ReferenceMobile = prev.ReferenceMobile
+                    });
+                }
+            }
+
+            _context.Employees.Add(staff);
             await _context.SaveChangesAsync();
+            return staff;
+        }
+        private string GenerateEmployeeId(string rolePrefix = "TCH")
+        {
+            // Optional: Include year
+            string yearPart = DateTime.Now.Year.ToString().Substring(2, 2); // e.g., "23"
+            string prefix = $"{rolePrefix}-{yearPart}-";
 
-            return _mapper.Map<EmployeeDto>(employee);
+            // Get last employee with same prefix
+            var lastStaff = _context.Employees
+                .Where(s => s.EmployeeId.StartsWith(prefix))
+                .OrderByDescending(s => s.EmployeeId)
+                .FirstOrDefault();
+
+            int nextNumber = 1;
+            if (lastStaff != null)
+            {
+                var numberPart = lastStaff.EmployeeId.Substring(prefix.Length);
+                if (int.TryParse(numberPart, out int lastNumber))
+                {
+                    nextNumber = lastNumber + 1;
+                }
+            }
+
+            return $"{prefix}{nextNumber:D4}"; // e.g., STF-23-0001
         }
 
-        public async Task<EmployeeDto> UpdateAsync(Guid id, UpdateEmployeeDto dto, Guid schoolId, string updatedBy)
+        public async Task<EmployeeModel?> GetStaffByIdAsync(Guid id, Guid? SchoolId)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id && e.SchoolId == schoolId && e.IsActive);
-            if (employee == null) return null;
-
-            employee.FullName = dto.FullName;
-            employee.Email = dto.Email;
-            employee.ContactNumber = dto.ContactNumber;
-            employee.JoiningDate = dto.JoiningDate;
-            employee.UpdatedAt = DateTime.UtcNow;
-            employee.UpdatedBy = updatedBy;
-
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<EmployeeDto>(employee);
+            return await _context.Employees
+                .Include(s => s.PreviousEmployments)
+                .FirstOrDefaultAsync(s => s.Id == id && s.SchoolId == SchoolId);
         }
 
-        public async Task<EmployeeDto> GetByIdAsync(Guid id, Guid schoolId)
+        public async Task<List<EmployeeModel>> GetAllStaffAsync(Guid? SchoolId)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id && e.SchoolId == schoolId && e.IsActive);
-            return _mapper.Map<EmployeeDto>(employee);
-        }
-
-        public async Task<List<EmployeeDto>> GetAllAsync(Guid schoolId)
-        {
-            var employees = await _context.Employees
-                .Where(e => e.SchoolId == schoolId && e.IsActive)
+            return await _context.Employees
+                .Include(s => s.PreviousEmployments)
+                .Where(x => x.SchoolId == SchoolId)
                 .ToListAsync();
-
-            return _mapper.Map<List<EmployeeDto>>(employees);
         }
 
-        public async Task<bool> DeleteAsync(Guid id, Guid schoolId, string deletedBy)
+        public async Task<EmployeeModel?> UpdateStaffAsync(Guid id, EmployeeDto staffDto, Guid? SchoolId)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id && e.SchoolId == schoolId && e.IsActive);
-            if (employee == null) return false;
+            var staff = await _context.Employees
+                .Include(s => s.PreviousEmployments)
+                .FirstOrDefaultAsync(s => s.Id == id && s.SchoolId == SchoolId);
+            if (staff == null) return null;
 
-            employee.IsActive = false;
-            employee.UpdatedAt = DateTime.UtcNow;
-            employee.UpdatedBy = deletedBy;
+            staff.FirstName = staffDto.FirstName;
+            staff.MiddleName = staffDto.MiddleName;
+            staff.LastName = staffDto.LastName;
+            staff.Email = staffDto.Email;
+            staff.MobileNumber = staffDto.MobileNumber;
+            staff.UserRole = staffDto.UserRole;
+            staff.Department = staffDto.Department;
+            staff.ProfilePhotoUrl = staffDto.ProfilePhotoUrl;
 
+            // Replace previous employments
+            staff.PreviousEmployments.Clear();
+            if (staffDto.PreviousEmployments != null)
+            {
+                foreach (var prev in staffDto.PreviousEmployments)
+                {
+                    staff.PreviousEmployments.Add(new EmployeePreviousEmployment
+                    {
+                        CompanyName = prev.CompanyName,
+                        JobTitle = prev.JobTitle,
+                        JoiningDate = prev.JoiningDate,
+                        RelievingDate = prev.RelievingDate,
+                        Location = prev.Location,
+                        ReferenceName = prev.ReferenceName,
+                        ReferenceMobile = prev.ReferenceMobile
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return staff;
+        }
+
+        public async Task<bool> DeleteStaffAsync(Guid id, Guid? SchoolId)
+        {
+            var staff = await _context.Employees
+                .Include(s => s.PreviousEmployments)
+                .FirstOrDefaultAsync(s => s.Id == id && s.SchoolId == SchoolId);
+            if (staff == null) return false;
+
+            _context.Employees.Remove(staff);
             await _context.SaveChangesAsync();
             return true;
         }
